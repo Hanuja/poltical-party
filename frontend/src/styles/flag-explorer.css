@@ -1,0 +1,171 @@
+/* Interactive flag / emblem explorer (components/FlagExplorer.jsx).
+   Used on /our-identity and /principles-ideology. */
+.oi-fx {
+  --oi-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --oi-ink: var(--color-charcoal);
+  --oi-muted: var(--color-gray-600);
+  --oi-line: var(--color-gray-200);
+}
+.oi-fx { max-width: 1180px; margin: 0 auto; text-align: center; opacity: 0; translate: 0 30px; transition: opacity 1s ease, translate 1s var(--oi-ease); }
+.oi-fx.is-in { opacity: 1; translate: 0 0; }
+
+.oi-fx-tabs { display: inline-flex; gap: 6px; padding: 5px; border-radius: 999px; background: var(--color-white); box-shadow: inset 0 0 0 1px rgba(128, 0, 32, 0.15); margin-bottom: 18px; }
+.oi-fx-tabs button {
+  border: 0; background: transparent; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+  font-weight: 600; color: var(--oi-muted); transition: background var(--transition), color var(--transition);
+}
+.oi-fx-tabs button.is-active { background: var(--color-primary); color: var(--color-white); }
+
+.oi-fx-hint {
+  display: inline-flex; align-items: center; gap: 10px; margin: 0 0 22px;
+  font-size: 0.95rem; color: var(--oi-muted);
+}
+.oi-fx-hint::before {
+  content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary);
+  box-shadow: 0 0 0 0 rgba(128, 0, 32, 0.45); animation: oi-fx-pulse 2s ease-out infinite;
+}
+@keyframes oi-fx-pulse { to { box-shadow: 0 0 0 12px rgba(128, 0, 32, 0); } }
+
+/* Artwork frame */
+.oi-fx-stage { position: relative; }
+.oi-fx-art {
+  position: relative; display: inline-block; max-width: 100%;
+  padding: clamp(14px, 3vw, 28px); background: var(--color-white);
+  border: 1px solid rgba(128, 0, 32, 0.12); border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(128, 0, 32, 0.12);
+  cursor: crosshair; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.oi-fx-art:active { cursor: grabbing; }
+.oi-fx-art::before, .oi-fx-art::after {
+  content: ''; position: absolute; width: 38px; height: 38px; pointer-events: none;
+  border: 3px solid var(--color-primary);
+}
+.oi-fx-art::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-top-left-radius: 18px; }
+.oi-fx-art::after { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-bottom-right-radius: 18px; }
+.oi-fx-art img { display: block; width: auto; height: auto; max-width: 100%; max-height: 460px; margin: 0 auto; pointer-events: none; }
+.oi-fx-overlay { position: absolute; pointer-events: none; }  /* placed over the image from JS */
+.oi-fx-tip {
+  position: absolute; z-index: 5; pointer-events: none; white-space: nowrap;
+  translate: -50% calc(-100% - 16px);
+  padding: 6px 12px; border-radius: 8px; background: var(--color-primary); color: var(--color-white);
+  font-size: 0.85rem; font-weight: 600; box-shadow: 0 8px 20px rgba(128, 0, 32, 0.3);
+}
+.oi-fx-tip::after {
+  content: ''; position: absolute; left: 50%; bottom: -5px; width: 10px; height: 10px; margin-left: -5px;
+  background: var(--color-primary); rotate: 45deg;
+}
+.oi-fx-caption {
+  margin: 20px 0 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-primary);
+}
+.oi-plaque-no {
+  display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 10px;
+  border: 1px solid currentColor; border-radius: 50%; font-family: var(--font-heading); letter-spacing: 0; font-size: 0.85rem;
+}
+.oi-fx-note { margin: 8px 0 0; font-size: 0.85rem; font-style: italic; color: var(--oi-muted); }
+
+/* Quick-pick chips */
+.oi-fx-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 26px 0 0; }
+.oi-fx-chip {
+  display: inline-flex; align-items: center; gap: 9px; padding: 7px 16px 7px 7px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(128, 0, 32, 0.22); background: var(--color-white); color: var(--oi-ink); font-weight: 600; font-size: 0.92rem;
+  transition: border-color var(--transition), background var(--transition), color var(--transition), transform var(--transition);
+}
+.oi-fx-chip:hover { border-color: var(--color-primary); transform: translateY(-2px); }
+.oi-fx-chip:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+.oi-fx-chip.is-active { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-white); }
+.oi-fx-chip-swatch { width: 24px; height: 24px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.oi-fx-chip-crop { width: 28px; height: 28px; border-radius: 50%; background-color: var(--color-white); background-repeat: no-repeat; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+
+/* Information panel: opens below the artwork */
+.oi-fx-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.6s var(--oi-ease); }
+.oi-fx-panel.is-open { grid-template-rows: 1fr; }
+.oi-fx-panel-inner { min-height: 0; overflow: hidden; }
+.oi-fx-card {
+  display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; text-align: left;
+  margin-top: 30px; padding: 28px 32px; border-radius: 18px; background: var(--color-white);
+  border: 1px solid rgba(128, 0, 32, 0.12); border-left: 6px solid var(--color-primary);
+  box-shadow: 0 18px 44px rgba(128, 0, 32, 0.10);
+  animation: oi-fx-in 0.6s var(--oi-ease) both;
+}
+@keyframes oi-fx-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.oi-fx-rep { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.oi-fx-rep-swatch, .oi-fx-rep-crop {
+  width: 112px; height: 112px; border-radius: 50%;
+  box-shadow: 0 0 0 6px var(--color-white), 0 0 0 8px var(--color-primary), 0 14px 30px rgba(128, 0, 32, 0.18);
+  animation: oi-fx-pop 0.7s var(--oi-ease) 0.1s both;
+}
+.oi-fx-rep-crop { background-color: var(--color-white); background-repeat: no-repeat; }
+@keyframes oi-fx-pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+.oi-fx-rep-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--oi-muted); text-align: center; }
+.oi-fx-rep-label code { display: block; margin-top: 4px; font-size: 0.85rem; letter-spacing: 0.04em; color: var(--oi-ink); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.oi-fx-copy > * { animation: oi-fx-in 0.6s var(--oi-ease) both; }
+.oi-fx-copy > :nth-child(2) { animation-delay: 0.08s; }
+.oi-fx-copy > :nth-child(3) { animation-delay: 0.16s; }
+.oi-fx-copy > :nth-child(4) { animation-delay: 0.24s; }
+.oi-fx-kind {
+  display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(128, 0, 32, 0.08); color: var(--color-primary);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+}
+.oi-fx-copy h3 { font-size: clamp(1.9rem, 3.4vw, 2.6rem); font-weight: 600; line-height: 1.05; color: var(--color-primary); margin: 12px 0 10px; }
+.oi-fx-meaning { font-weight: 600; color: var(--oi-ink); margin: 0 0 8px; }
+.oi-fx-copy p { margin: 0; font-size: 1.05rem; line-height: 1.75; color: var(--oi-muted); }
+.oi-fx:lang(ta) .oi-fx-copy h3, .oi-fx:lang(si) .oi-fx-copy h3 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1.35; }
+
+@media (max-width: 680px) {
+  .oi-fx-card { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 18px; padding: 24px 20px; border-left-width: 1px; border-top: 6px solid var(--color-primary); }
+  .oi-fx-rep-swatch, .oi-fx-rep-crop { width: 88px; height: 88px; }
+  .oi-fx-chip { font-size: 0.85rem; }
+}
+/* Side-by-side: artwork left, information panel right */
+.oi-fx-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(320px, 1fr); gap: 40px; align-items: start; }
+.oi-fx-main { min-width: 0; }
+.oi-fx-empty { display: none; }
+@media (min-width: 1025px) {
+  .oi-fx-panel { grid-template-rows: 1fr; position: sticky; top: calc(var(--header-height) + 24px); }
+  .oi-fx-card {
+    grid-template-columns: 1fr; gap: 22px; margin-top: 0; padding: 32px;
+    border-left-width: 1px; border-top: 6px solid var(--color-primary);
+  }
+  .oi-fx-rep { flex-direction: row; align-items: center; gap: 18px; }
+  .oi-fx-rep-label { text-align: left; }
+  .oi-fx-rep-swatch, .oi-fx-rep-crop { width: 96px; height: 96px; }
+  .oi-fx-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    min-height: 320px; padding: 40px 32px; border-radius: 18px; text-align: center;
+    background: var(--color-white); border: 1.5px dashed rgba(128, 0, 32, 0.28);
+    animation: oi-fx-in 0.6s var(--oi-ease) both;
+  }
+  .oi-fx-empty p { margin: 0; max-width: 28ch; font-size: 1.02rem; line-height: 1.7; color: var(--oi-muted); }
+  .oi-fx-empty-icon {
+    position: relative; width: 64px; height: 64px; border-radius: 50%;
+    border: 2px solid var(--color-primary); box-shadow: 0 0 0 8px rgba(128, 0, 32, 0.06);
+  }
+  .oi-fx-empty-icon::before, .oi-fx-empty-icon::after { content: ''; position: absolute; background: var(--color-primary); left: 50%; top: 50%; translate: -50% -50%; }
+  .oi-fx-empty-icon::before { width: 2px; height: 26px; }
+  .oi-fx-empty-icon::after { width: 26px; height: 2px; }
+}
+@media (max-width: 1024px) {
+  .oi-fx-layout { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oi-fx-hint::before, .oi-fx-card, .oi-fx-rep-swatch, .oi-fx-rep-crop, .oi-fx-copy > * { animation: none !important; }
+  .oi-fx-panel { transition: none; }
+}
+
+
+/* Stacked variant (used beside the leader portrait on /principles-ideology):
+   the information panel always opens below the artwork, never beside it. */
+.oi-fx.oi-fx--stacked { max-width: none; }
+.oi-fx.oi-fx--stacked .oi-fx-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.oi-fx.oi-fx--stacked .oi-fx-panel { position: static; grid-template-rows: 0fr; }
+.oi-fx.oi-fx--stacked .oi-fx-panel.is-open { grid-template-rows: 1fr; }
+.oi-fx.oi-fx--stacked .oi-fx-empty { display: none; }
+.oi-fx.oi-fx--stacked .oi-fx-card {
+  grid-template-columns: auto 1fr; margin-top: 24px; padding: 24px 26px;
+  border-left-width: 6px; border-top: 1px solid rgba(128, 0, 32, 0.12);
+}
+.oi-fx.oi-fx--stacked .oi-fx-rep { flex-direction: column; }
+@media (max-width: 680px) {
+  .oi-fx.oi-fx--stacked .oi-fx-card { grid-template-columns: 1fr; border-left-width: 1px; border-top: 6px solid var(--color-primary); }
+}

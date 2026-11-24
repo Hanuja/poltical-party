@@ -1,0 +1,10 @@
+# Single-page app fallback for Apache (WAMP / shared hosting).
+# Lets direct visits and page refreshes on routes such as /principles-ideology
+# load index.html, so React Router can show the right page.
+# Real files and folders (assets, images, PDFs) are served as normal.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . index.html [L]
+</IfModule>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: http://localhost/poltical%20party/frontend/public/sitemap.xml

@@ -1,0 +1,28 @@
+# Protect sensitive files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# No directory listing
+Options -Indexes
+
+# API endpoints
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
+
+# Forward Authorization header to PHP (WAMP/Apache CGI)
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# Public Voice supports batches of photos alongside optional audio/video.
+<IfModule mod_php.c>
+  php_value upload_max_filesize 100M
+  php_value post_max_size 650M
+  php_value max_file_uploads 40
+  php_value max_execution_time 600
+  php_value max_input_time 600
+</IfModule>

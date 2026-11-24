@@ -1,0 +1,63 @@
+:root {
+  /* ------------------------------------------------------------------
+     Brand palette — one site-wide identity
+     White #FFFFFF · soft grey #F5F5F5 · ink #171717 · maroon #800020 · yellow #F2C230
+     (Same tokens as the Our People module, styles/our-people.css.)
+     ------------------------------------------------------------------ */
+  --color-primary: #800020;        /* Maroon — primary accent */
+  --color-primary-dark: #5c0018;   /* Maroon hover / pressed */
+  --color-primary-light: #9e1b30;
+  --color-primary-tint: rgba(128, 0, 32, 0.06);
+  --color-accent: #F2C230;         /* Yellow — small details only */
+  --color-accent-dark: #d9a91a;
+  --color-cream: #f5f5f5;          /* legacy name → soft grey */
+  --color-white: #ffffff;
+  --color-ink: #171717;
+  --color-charcoal: #171717;       /* legacy name → ink */
+  --color-deep-red: #5c0018;       /* legacy name → dark maroon (no bright red) */
+  --color-soft: #f5f5f5;
+  --color-line: #e8e8e8;
+
+  /* Neutrals */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e8e8e8;
+  --color-gray-300: #d9d9d9;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #6b6b6b;
+  --color-gray-600: #525252;
+  --color-gray-700: #3d3d3d;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+
+  /* Semantic */
+  --color-text: #171717;
+  --color-text-body: #2b2b2b;
+  --color-text-muted: #6b6b6b;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f5f5f5;
+  --color-border: #e8e8e8;
+  --color-success: #800020;        /* palette-only: confirmations use maroon */
+  --color-error: #800020;
+
+  /* Typography — elegant serif display, clean sans body.
+     Tamil / Sinhala glyphs fall through to Noto Sans Tamil / Sinhala. */
+  --font-display: 'Playfair Display', 'Noto Sans Tamil', 'Noto Sans Sinhala', Georgia, serif;
+  --font-heading: var(--font-display);
+  --font-body: 'Instrument Sans', 'Noto Sans Tamil', 'Noto Sans Sinhala', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Sizing */
+  --container: 100%;
+  --header-height: 76px;
+  --topbar-height: 40px;
+
+  /* Effects */
+  --shadow-sm: 0 1px 2px rgba(23, 23, 23, 0.06);
+  --shadow-md: 0 6px 18px rgba(23, 23, 23, 0.08);
+  --shadow-lg: 0 16px 40px rgba(23, 23, 23, 0.12);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --transition: 0.25s var(--ease);
+}

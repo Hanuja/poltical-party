@@ -1,0 +1,46 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# Local environment files; retain example templates
+.env*
+!.env.example
+**/.env*
+!**/.env.example
+
+# Credentials and local key material
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+# User uploads and runtime data
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.log
+npm-debug.log*
+*.tmp
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/
+
+# Test outputs
+test-results/
+playwright-report/
+qa-*.png
+qa-*.mjs
+qa_*.mjs
+hero-check.png
+*.bak
+frontend/src/fixtail2.mjs
+
+# Windows reserved device-name artifact (kept locally, never staged)
+/nul

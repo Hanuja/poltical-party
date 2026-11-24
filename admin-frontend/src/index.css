@@ -1,0 +1,12 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  font-family: 'Poppins', 'Noto Sans Tamil', 'Noto Sans Sinhala', system-ui, sans-serif;
+  background: #FFF8F0;
+  color: #1F1F1F;
+  -webkit-font-smoothing: antialiased;
+}
+[lang="ta"], .lang-ta { font-family: 'Noto Sans Tamil', 'Poppins', sans-serif; }
+[lang="si"], .lang-si { font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif; }
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }

@@ -1,0 +1,80 @@
+/* Political Information Cards – exact three-part structure (Leader Image → Red Button → Description) */
+.political-cards-section { background: #F5F5F5; padding: 80px 0; }
+.political-cards-section .section-title h2 { color: #171717; }
+.political-cards-section .section-title .eyebrow { color: #800020; }
+.political-cards-section .section-title .title-underline { background: #800020; }
+.political-cards-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;
+  margin-top: 32px;
+}
+.political-info-card {
+  position: relative; background: #fff; border-radius: 12px;
+  overflow: visible; transition: transform var(--transition), box-shadow var(--transition);
+  padding-bottom: 0;
+}
+.political-info-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+.political-card-frame {
+  position: relative; width: 100%; height: 115px;
+  overflow: visible; margin-bottom: 8px;
+}
+.political-card-bg {
+  width: 100%; height: 100%; background: #800020;
+  border-radius: 7px; overflow: hidden;
+  position: relative;
+}
+.political-card-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(128, 0, 32,0.65) 0%, rgba(128, 0, 32,0.25) 100%);
+  pointer-events: none;
+}
+.political-card-bg img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.political-info-card:hover .political-card-bg img { transform: scale(1.05); }
+/* Top-only pop-out: portrait anchored to frame bottom, clipped at lower boundary,
+   only the upper portion overflows above the red box top edge. */
+.political-card-foreground {
+  position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 85%; height: 230px;
+  z-index: 2; pointer-events: none;
+  transition: transform 0.4s ease;
+  transform-origin: bottom center;
+}
+.political-card-foreground img {
+  width: 100%; height: 100%;
+  object-fit: contain; object-position: bottom center;
+  display: block;
+}
+.political-info-card:hover .political-card-foreground {
+  transform: translateX(-50%) scale(1.03);
+}
+.political-card-btn {
+  width: 100%; height: 45px; background: #800020; border: none;
+  border-radius: 9px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; font-size: 16px; font-weight: 700; color: #fff;
+  font-family: var(--font-body); cursor: pointer;
+  transition: background var(--transition);
+}
+.political-card-btn:hover { background: #5c0018; }
+.political-card-arrow {
+  width: 29px; height: 29px; border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.25s ease;
+}
+.political-info-card:hover .political-card-arrow { transform: translateX(5px); }
+.political-card-desc {
+  margin: 8px 16px 16px; font-size: 13px; color: #6b6b6b;
+  font-weight: 400; line-height: 1.4; font-family: var(--font-body);
+}
+@media (max-width: 1024px) {
+  .political-cards-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .political-cards-grid { grid-template-columns: 1fr; }
+  .political-card-frame { height: 115px; }
+  .political-card-btn { font-size: 15px; height: 42px; }
+  .political-card-desc { font-size: 12px; }
+}

@@ -1,0 +1,302 @@
+/* ==========================================================================
+   Public-site footer — "Together for Our People. Building a Better Tomorrow."
+   Content comes from Admin → Footer Settings (GET /api/settings/public/?key=footer).
+
+   Page-scoped Tailwind, same approach as announcements.css: theme + utilities only (NO preflight),
+   `tw:` prefix, utilities !important, and only the footer's files are scanned. Colour tokens use an
+   `rf-` prefix so they never collide with another page's @theme. Everything else is scoped to .rf-root.
+   ========================================================================== */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) important prefix(tw) source(none);
+@source "../components/footer";
+
+@theme {
+  --color-rf-maroon: #800020;
+  --color-rf-deep: #5c0018;
+  --color-rf-dark: #3a0010;
+  --color-rf-gold: #FDB913;
+  --color-rf-gold-soft: #FFE08A;
+  --color-rf-ink: #171717;
+  --color-rf-mute: #666666;
+  --color-rf-light: #F7F7F7;
+}
+
+.rf-root {
+  --rf-maroon: #800020;
+  --rf-deep: #5c0018;
+  --rf-dark: #3a0010;
+  --rf-gold: #FDB913;
+  --rf-gold-soft: #FFE08A;
+  --rf-text: #E5E5E5;
+  --rf-text-dim: rgba(229, 229, 229, 0.72);
+  --rf-line: rgba(253, 185, 19, 0.22);
+  --rf-ease: cubic-bezier(.22, .61, .36, 1);
+  --rf-display: var(--font-display, 'Playfair Display', Georgia, serif);
+  --rf-body: var(--font-body, system-ui, sans-serif);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: auto;
+  color: var(--rf-text);
+  font-family: var(--rf-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  background:
+    radial-gradient(1100px 420px at 88% -8%, rgba(253, 185, 19, 0.13), transparent 60%),
+    radial-gradient(700px 380px at 6% 108%, rgba(253, 185, 19, 0.07), transparent 60%),
+    linear-gradient(165deg, var(--rf-maroon) 0%, var(--rf-deep) 52%, var(--rf-dark) 100%);
+}
+.rf-root *, .rf-root *::before, .rf-root *::after { box-sizing: border-box; }
+.rf-root h2, .rf-root h3, .rf-root h4, .rf-root p, .rf-root ul, .rf-root ol, .rf-root li, .rf-root address, .rf-root form { margin: 0; padding: 0; }
+.rf-root ul, .rf-root ol { list-style: none; }
+.rf-root address { font-style: normal; }
+.rf-root a { color: inherit; text-decoration: none; }
+.rf-root img { display: block; max-width: 100%; }
+.rf-root button, .rf-root input { font: inherit; }
+.rf-root :focus-visible { outline: 3px solid var(--rf-gold); outline-offset: 3px; border-radius: 6px; }
+.rf-root h2, .rf-root h3 { font-family: var(--rf-display); color: #fff; letter-spacing: -0.005em; line-height: 1.25; }
+
+/* Gold hairline at the very top + Tamil kolam lattice (inline SVG, see Footer.jsx). */
+.rf-root::before {
+  content: '';
+  position: absolute; inset: 0 0 auto 0; height: 3px; z-index: 1;
+  background: linear-gradient(90deg, transparent, var(--rf-gold) 18%, var(--rf-gold-soft) 50%, var(--rf-gold) 82%, transparent);
+}
+.rf-pattern { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; color: var(--rf-gold); opacity: 0.07; pointer-events: none; }
+
+/* ---------- Column headings: serif title + short gold rule ---------- */
+.rf-root .rf-heading {
+  position: relative;
+  font-size: 1rem !important;
+  font-family: var(--rf-body) !important;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rf-gold) !important;
+  padding-bottom: 12px;
+  margin-bottom: 18px !important;
+}
+.rf-heading::after {
+  content: '';
+  position: absolute; left: 0; bottom: 0;
+  width: 34px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--rf-gold), rgba(253, 185, 19, 0));
+}
+.rf-root .rf-subheading { font-family: var(--rf-body) !important; color: var(--rf-text-dim) !important; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rf-text-dim); margin: 22px 0 12px !important; }
+
+/* ---------- Simple links: golden underline that grows ---------- */
+.rf-link {
+  position: relative;
+  display: inline-block;
+  color: var(--rf-text);
+  padding: 3px 0;
+  transition: color .2s var(--rf-ease);
+}
+.rf-link::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 1.5px; border-radius: 2px;
+  background: var(--rf-gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s var(--rf-ease);
+}
+.rf-link:hover, .rf-link:focus-visible { color: #fff; }
+.rf-link:hover::after, .rf-link:focus-visible::after { transform: scaleX(1); }
+.rf-link[aria-current='page'] { color: var(--rf-gold-soft); }
+
+/* ---------- Numbered identity links with sliding arrow ---------- */
+.rf-idlink { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.rf-idlink-num { font-family: var(--rf-display); font-size: 0.95rem; color: var(--rf-gold); line-height: 1.5; font-variant-numeric: tabular-nums; }
+.rf-idlink-title { display: block; color: #fff; font-weight: 600; font-size: 0.92rem; line-height: 1.4; transition: color .2s var(--rf-ease); }
+.rf-idlink-sub { display: block; color: var(--rf-text-dim); font-size: 0.82rem; line-height: 1.5; margin-top: 2px; }
+.rf-idlink-arrow { color: var(--rf-gold); margin-top: 3px; transition: transform .3s var(--rf-ease), opacity .3s; opacity: .55; }
+.rf-idlink:hover .rf-idlink-title, .rf-idlink:focus-visible .rf-idlink-title { color: var(--rf-gold-soft); }
+.rf-idlink:hover .rf-idlink-arrow, .rf-idlink:focus-visible .rf-idlink-arrow { transform: translateX(5px); opacity: 1; }
+li:last-child > .rf-idlink { border-bottom: 0; }
+
+/* ---------- Social icons ---------- */
+.rf-social {
+  display: inline-grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 999px;
+  color: #fff;
+  border: 1px solid rgba(253, 185, 19, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  transition: background .25s var(--rf-ease), color .25s, transform .25s var(--rf-ease), box-shadow .25s;
+}
+.rf-social:hover, .rf-social:focus-visible {
+  background: var(--rf-gold); color: var(--rf-maroon); border-color: var(--rf-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -6px rgba(253, 185, 19, 0.65);
+}
+
+/* ---------- Logo plate (the logo is maroon-toned, so it sits on a light plate) ---------- */
+.rf-logo-plate {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 16px; border-radius: 16px;
+  background: linear-gradient(160deg, #fffaf0, #fff3d6);
+  border: 1px solid rgba(253, 185, 19, 0.55);
+  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.55), 0 0 0 4px rgba(253, 185, 19, 0.08);
+}
+
+/* ---------- Glass cards (CTA + newsletter) ---------- */
+.rf-glass {
+  position: relative;
+  border-radius: 22px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 50px -30px rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.rf-glass::before {
+  content: '';
+  position: absolute; left: 24px; right: 24px; top: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(253, 185, 19, 0.75), transparent);
+}
+
+/* ---------- Gold buttons ---------- */
+.rf-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding: 11px 22px; border-radius: 999px;
+  font-weight: 700; font-size: 0.92rem; line-height: 1.2; text-align: center;
+  color: var(--rf-maroon) !important;
+  background: var(--rf-gold);
+  border: 1.5px solid var(--rf-gold);
+  cursor: pointer;
+  box-shadow: 0 8px 22px -12px rgba(253, 185, 19, 0.8);
+  transition: background .2s var(--rf-ease), transform .2s var(--rf-ease), box-shadow .25s;
+}
+.rf-btn:hover, .rf-btn:focus-visible { background: var(--rf-gold-soft); transform: translateY(-1px); box-shadow: 0 12px 28px -10px rgba(253, 185, 19, 0.85); }
+.rf-btn:active { transform: translateY(0); }
+.rf-btn:disabled { opacity: .7; cursor: progress; transform: none; }
+.rf-btn svg { transition: transform .25s var(--rf-ease); }
+.rf-btn:hover svg { transform: translateX(3px); }
+.rf-btn-outline { background: transparent; color: var(--rf-gold) !important; box-shadow: none; }
+.rf-btn-outline:hover, .rf-btn-outline:focus-visible { background: var(--rf-gold); color: var(--rf-maroon) !important; }
+
+/* ---------- Newsletter field ---------- */
+.rf-input-wrap { position: relative; flex: 1 1 220px; min-width: 0; }
+.rf-input-wrap svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--rf-gold); pointer-events: none; }
+.rf-input {
+  width: 100%; min-height: 46px;
+  padding: 11px 16px 11px 42px; border-radius: 999px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.rf-input::placeholder { color: rgba(255, 255, 255, 0.55); }
+.rf-input:focus { outline: none; border-color: var(--rf-gold); background: rgba(0, 0, 0, 0.3); box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.25); }
+.rf-input[aria-invalid='true'] { border-color: #ffb4a8; }
+.rf-msg { display: flex; gap: 8px; align-items: flex-start; font-size: 0.86rem; line-height: 1.55; margin-top: 10px; }
+.rf-msg svg { flex-shrink: 0; margin-top: 2px; }
+.rf-msg-ok { color: #c8f5d2; }
+.rf-msg-err { color: #ffd0c8; }
+.rf-hp { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; overflow: hidden; }
+
+/* ---------- Contact list ---------- */
+.rf-contact li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+.rf-contact-icon {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  color: var(--rf-gold); background: rgba(253, 185, 19, 0.1); border: 1px solid rgba(253, 185, 19, 0.22);
+}
+.rf-contact-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rf-text-dim); }
+.rf-contact-value { color: #fff; overflow-wrap: anywhere; }
+a.rf-contact-value { transition: color .2s; }
+a.rf-contact-value:hover, a.rf-contact-value:focus-visible { color: var(--rf-gold-soft); text-decoration: underline; text-decoration-color: var(--rf-gold); text-underline-offset: 3px; }
+
+/* ---------- Bottom bar ---------- */
+.rf-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(253, 185, 19, 0.7) 20%, rgba(253, 185, 19, 0.7) 80%, transparent); }
+.rf-divider-emblem { position: relative; }
+.rf-divider-emblem > span {
+  position: absolute; left: 50%; top: 50%; width: 9px; height: 9px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--rf-gold);
+  box-shadow: 0 0 0 5px var(--rf-dark), 0 0 14px rgba(253, 185, 19, 0.6);
+}
+.rf-legal a { color: var(--rf-text); transition: color .2s; }
+.rf-legal a:hover, .rf-legal a:focus-visible { color: var(--rf-gold); text-decoration: underline; text-underline-offset: 3px; }
+.rf-legal li + li::before { content: '•'; color: rgba(253, 185, 19, 0.6); margin: 0 10px 0 0; }
+
+@media (max-width: 639px) {
+  .rf-btn-row .rf-btn { width: 100%; }
+  .rf-legal li + li::before { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-root *, .rf-root *::before, .rf-root *::after { transition-duration: 0.01ms !important; }
+  .rf-social:hover, .rf-btn:hover { transform: none; }
+  .rf-idlink:hover .rf-idlink-arrow { transform: none; }
+}
+
+/* ==========================================================================
+   Responsive layout. Kept here (not in tw: variants) on purpose: other pages load their own
+   tw: sheets later, and a later `tw:lg:grid-cols-3` or `tw:text-2xl` would beat an earlier
+   `tw:xl:` override of the same property. Scoped .rf-root selectors avoid that.
+   ========================================================================== */
+.rf-root .rf-wrap { position: relative; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+.rf-root .rf-band { display: grid; gap: 20px; padding-bottom: 48px; }
+.rf-root .rf-muted { color: var(--rf-text); }
+.rf-root .rf-card-pad { padding: 24px; }
+.rf-root .rf-cta-title { font-size: 1.5rem; }
+.rf-root .rf-nl-title { font-size: 1.25rem; }
+.rf-root .rf-grid { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 40px; row-gap: 44px; padding: 60px 0 48px; }
+.rf-root .rf-identity-inner { margin-top: 20px; }
+.rf-root .rf-list { display: grid; gap: 6px; }
+.rf-root .rf-list-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+.rf-root .rf-contact { display: grid; gap: 16px; }
+.rf-root .rf-bottom-row { display: flex; flex-direction: column; gap: 16px; padding-top: 28px; text-align: center; font-size: 0.8rem; }
+.rf-root .rf-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 16px; }
+
+@media (min-width: 640px) {
+  .rf-root .rf-wrap { padding: 0 24px; }
+  .rf-root .rf-grid { padding-top: 72px; }
+  .rf-root .rf-card-pad { padding: 32px; }
+  .rf-root .rf-cta-title { font-size: 1.9rem; }
+  .rf-root .rf-nl-title { font-size: 1.5rem; }
+  .rf-root .rf-legal { gap: 8px 0; }
+  .rf-root .rf-legal li { margin-right: 10px; }
+}
+@media (min-width: 768px) {
+  .rf-root .rf-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rf-root .rf-col-identity { grid-column: span 2; display: flex; align-items: flex-start; gap: 32px; }
+  .rf-root .rf-identity-inner { margin-top: 0; }
+  .rf-root .rf-list-2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 1024px) {
+  .rf-root .rf-wrap { padding: 0 32px; }
+  .rf-root .rf-band.is-two { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .rf-root .rf-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rf-root .rf-col-identity { grid-column: span 3; }
+  .rf-root .rf-bottom-row { flex-direction: row; align-items: center; justify-content: space-between; text-align: left; }
+  .rf-root .rf-legal { justify-content: flex-end; }
+}
+@media (min-width: 1280px) {
+  .rf-root .rf-grid { grid-template-columns: minmax(0,1.35fr) minmax(0,0.8fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr); column-gap: 32px; }
+  .rf-root .rf-col-identity, .rf-root .rf-col-connect { grid-column: auto; }
+  .rf-root .rf-col-identity { display: block; }
+  .rf-root .rf-identity-inner { margin-top: 20px; }
+}
+
+/* ---------- Fade-in on view (see useReveal in SiteFooter.jsx) ---------- */
+.rf-root.rf-reveal-on [data-rf-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .6s var(--rf-ease), transform .6s var(--rf-ease);
+  transition-delay: calc(var(--rf-i, 0) * 70ms);
+}
+.rf-root.rf-reveal-on [data-rf-reveal].is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rf-root.rf-reveal-on [data-rf-reveal] { transform: none; transition: opacity .2s linear !important; transition-delay: 0s; }
+}
+/* Party identity hierarchy */
+.party-title{font-family:var(--rf-display);font-size:3.25rem;font-weight:700;line-height:1.1;color:#fff;margin:0;letter-spacing:.01em}
+.party-subtitle{font-family:var(--rf-display);font-size:1.75rem;font-weight:500;line-height:1.4;color:var(--rf-gold-soft,#F4C430);font-style:italic;margin:10px 0 0}
+.party-description{font-size:1.125rem;line-height:1.8;margin:14px 0 0 !important}
+@media(max-width:768px){
+ .party-title{font-size:2.25rem}
+ .party-subtitle{font-size:1.375rem}
+ .party-description{font-size:1rem}
+}

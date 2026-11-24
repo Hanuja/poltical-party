@@ -1,0 +1,143 @@
+/* Political leaders — photo cards that open the vintage quote card (components/LeaderArchive.jsx) */
+.la {
+  --la-maroon: var(--color-primary, #800020); --la-burgundy: var(--color-primary-dark, #5c0018); --la-yellow: var(--color-accent, #F2C230);
+  --la-ink: #171717; --la-ivory: #FFFFFF; --la-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: 'Inter', var(--font-body);
+}
+.la h2, .la h3, .la strong { font-family: 'Playfair Display', Georgia, serif; }
+
+/* ── 1 · Photo cards ─────────────────────────────────── */
+.la-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; }
+.la-card-wrap { transition: opacity 0.5s ease, transform 0.5s var(--la-ease); }
+.la-card-wrap.is-lifted { visibility: hidden; }
+.la.is-active .la-card-wrap:not(.is-lifted) { opacity: 0.25; transform: scale(0.98); }
+.la-card {
+  all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer;
+  padding: 8px; background: #FFFFFF; border: 1px solid var(--la-yellow); border-radius: 4px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08); transition: box-shadow 0.4s ease, transform 0.4s var(--la-ease);
+}
+.la-card:hover, .la-card:focus-visible { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(128, 0, 32, 0.2); }
+.la-card:focus-visible { outline: 3px solid var(--la-yellow); outline-offset: 3px; }
+.la-card.is-current { border: 2px solid var(--la-maroon); }
+.la-card-photo { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--la-ivory); }
+.la-card-photo img, .la-card-photo .la-plate { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s var(--la-ease); }
+.la-card:hover .la-card-photo img, .la-card:hover .la-card-photo .la-plate { transform: scale(1.07); }
+.la-card-veil { position: absolute; inset: 0; background: rgba(128, 0, 32, 0.62); opacity: 0; transition: opacity 0.5s ease; }
+.la-card:hover .la-card-veil, .la-card:focus-visible .la-card-veil { opacity: 1; }
+.la-card-no { position: absolute; top: 8px; left: 10px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; color: var(--la-maroon); background: rgba(255, 255, 255, 0.85); padding: 3px 7px; border-radius: 3px; }
+.la-card-cap {
+  position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 12px 10px; background: rgba(255, 255, 255, 0.94); border-top: 1px solid var(--la-yellow); color: var(--la-ink);
+  transition: background 0.5s ease, color 0.4s ease, transform 0.5s var(--la-ease), border-color 0.4s ease;
+}
+.la-card-cap strong { font-size: 1.02rem; font-weight: 600; line-height: 1.2; transition: font-weight 0.3s ease; }
+.la-card-cap span { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--la-maroon); transition: color 0.4s ease; }
+.la-card:hover .la-card-cap, .la-card:focus-visible .la-card-cap { background: transparent; border-top-color: transparent; color: #FFFFFF; transform: translateY(-12px); }
+.la-card:hover .la-card-cap strong, .la-card:focus-visible .la-card-cap strong { font-weight: 800; }
+.la-card:hover .la-card-cap span, .la-card:focus-visible .la-card-cap span { color: #FFFFFF; }
+
+/* archival plate (until a verified portrait is added) */
+.la-plate {
+  display: grid; place-items: center;
+  background:
+    repeating-linear-gradient(0deg, rgba(128, 0, 32, 0.04) 0 2px, transparent 2px 7px),
+    radial-gradient(circle at 50% 38%, #FFFFFF 0%, var(--la-ivory) 65%, #f4f1ec 100%);
+  box-shadow: inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px var(--la-yellow);
+}
+.la-plate span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 2.6rem; color: var(--la-maroon); letter-spacing: 0.04em; }
+
+
+/* card initials sit in the upper part, clear of the caption */
+.la-card-photo .la-plate { display: grid; place-items: start center; padding-top: 30%; box-sizing: border-box; }
+
+/* ── TVK theme · maroon / yellow / white / black ─────── */
+.la-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
+.la-card-photo { aspect-ratio: 4 / 3.4; }
+.la-card { border: 1px solid rgba(242, 194, 48, 0.75); border-top: 4px solid var(--la-yellow); }
+.la-card:hover, .la-card:focus-visible { border-color: var(--la-yellow); }
+.la-card.is-current { border: 2px solid var(--la-maroon); border-top: 4px solid var(--la-maroon); }
+.la-card-no { background: var(--la-yellow); color: var(--la-ink); }
+.la-card-cap { background: #FFFFFF; border-top: 2px solid var(--la-yellow); }
+.la-card-cap strong { color: var(--la-ink); font-size: 1.15rem; }
+.la-card:hover .la-card-cap strong, .la-card:focus-visible .la-card-cap strong { color: #FFFFFF; }
+.la-card:hover .la-card-cap span, .la-card:focus-visible .la-card-cap span { color: var(--la-yellow); }
+.la-card-photo .la-plate span { font-size: 3.2rem; }
+
+/* section heading in the TVK palette */
+.pi2 .pi2-s3 .pi2-eyebrow { display: inline-block; padding: 6px 16px; border-radius: 999px; background: #FFFFFF; border: 2px solid #FFFFFF; color: var(--color-primary, #800020); font-weight: 800; box-shadow: 0 6px 18px rgba(128, 0, 32, 0.14); }
+.pi2-s3 .pi2-head h2 { color: var(--color-primary, #800020); }
+.pi2-s3 .pi2-sub { color: #171717; }
+
+/* ── 3D cards: tilt toward the cursor, with a moving light glare ── */
+.la-card-photo img { object-position: 50% 22%; }
+.la-card { --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 30%; transform-style: preserve-3d; will-change: transform; }
+.la-card:hover, .la-card:focus-visible {
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px);
+  transition: box-shadow 0.4s ease, transform 0.12s linear;
+  box-shadow: calc(var(--ry) * -1.4) 26px 46px rgba(128, 0, 32, 0.22);
+}
+.la-glare {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 1; transition: opacity 0.4s ease;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 55%);
+  mix-blend-mode: soft-light;
+}
+.la-card:hover .la-glare { opacity: 1; }
+.la-card-veil, .la-card-no, .la-card-cap { z-index: 2; }
+/* the card being read stays softly marked while its quote card is open */
+.la.is-active .la-card-wrap:not(.is-lifted) { opacity: 1; transform: none; }
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 900px) { .la-grid { gap: 16px; } .la-card-photo .la-plate span { font-size: 2.2rem; } }
+@media (max-width: 640px) {
+  .la-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .la-card-photo { aspect-ratio: 3 / 4; }
+  .la-card-photo .la-plate { padding-top: 26%; }
+  .la-card-photo .la-plate span { font-size: 1.8rem; }
+  .la-card-cap { padding: 9px 10px 8px; }
+  .la-card-cap strong { font-size: 0.92rem; }
+  .la-card-cap span { font-size: 0.7rem; }
+}
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .la-card:hover, .la-card:focus-visible { transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) { .la * { animation: none !important; transition: none !important; } }
+
+/* ── Presidents of Sri Lanka · floating poster cards (left → right) ──
+   Scoped to this section only. Two layers, two transforms, so nothing fights:
+     <li.la-card-wrap>  slow horizontal drift   translateX(0 → --la-drift), eases back
+     <span.la-float>    soft vertical bob       on a different period, so the path feels organic
+     <button.la-card>   existing hover tilt / lift / image zoom — untouched
+   --la-drift is kept smaller than the grid gap and the container padding at every breakpoint,
+   so neighbours never touch and nothing is clipped or scrolls. Pure CSS, no JS timers. */
+.pi2-s3 { overflow-x: hidden; overflow-x: clip; } /* belt-and-braces: never a horizontal scrollbar */
+.pi2-s3 .la-card-wrap {
+  --la-drift: 22px;                                  /* desktop (gap 26px, padding ≥ 27px) */
+  --la-bob: 6px;
+  --la-dur: calc(7.5s + var(--i, 0) * 0.4s);         /* 7.5s – 9.5s, slightly different per card */
+  --la-bob-dur: calc(6.2s + var(--i, 0) * 0.35s);
+  animation: la-float-x var(--la-dur) ease-in-out calc(var(--i, 0) * -1.35s) infinite alternate both;
+  will-change: transform;
+}
+.pi2-s3 .la-float {
+  display: block;
+  animation: la-float-y var(--la-bob-dur) ease-in-out calc(var(--i, 0) * -0.9s) infinite alternate both;
+  will-change: transform;
+}
+/* hold still while a poster is pointed at, and while its quote card is open */
+.pi2-s3 .la-card-wrap:hover, .pi2-s3 .la-card-wrap:hover .la-float,
+.pi2-s3 .la.is-active .la-card-wrap, .pi2-s3 .la.is-active .la-float { animation-play-state: paused; }
+/* …and while it has keyboard focus (separate rule: older browsers without :has() just skip it) */
+.pi2-s3 .la-card-wrap:has(.la-card:focus-visible), .pi2-s3 .la-card-wrap:has(.la-card:focus-visible) .la-float { animation-play-state: paused; }
+
+@keyframes la-float-x { from { transform: translateX(0); } to { transform: translateX(var(--la-drift, 22px)); } }
+@keyframes la-float-y { from { transform: translateY(0); } to { transform: translateY(calc(var(--la-bob, 6px) * -1)); } }
+
+/* tablet: shorter drift (gap 16px, padding ≥ 20px) */
+@media (max-width: 900px) { .pi2-s3 .la-card-wrap { --la-drift: 12px; --la-bob: 4px; } }
+/* mobile: slower, subtle (gap 12px, padding 20px) */
+@media (max-width: 640px) {
+  .pi2-s3 .la-card-wrap { --la-drift: 6px; --la-bob: 3px; --la-dur: calc(9.4s + var(--i, 0) * 0.1s); --la-bob-dur: calc(8s + var(--i, 0) * 0.3s); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pi2-s3 .la-card-wrap, .pi2-s3 .la-float { animation: none !important; transform: none !important; }
+}

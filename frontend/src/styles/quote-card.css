@@ -1,0 +1,170 @@
+/* Vintage parchment quote poster (components/QuoteCard.jsx)
+   Tall poster layout: bronze “ top-left, big condensed lines, thin rule, “— NAME”,
+   closing ” bottom-left, and the person large on the right from the middle down.
+   Everything is sized in container units (cqw), so the poster keeps its proportions. */
+.qc-overlay {
+  /* TVK palette: maroon / yellow / white / black */
+  --qc-ink: #171717; --qc-amber: var(--color-primary, #800020); --qc-bronze: var(--color-primary, #800020);
+  --qc-rule: var(--color-accent, #F2C230); --qc-yellow: var(--color-accent, #F2C230);
+  --qc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: fixed; inset: 0; z-index: 3200; display: grid; place-items: center; padding: 28px 16px;
+  background: rgba(10, 10, 10, 0.72); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  animation: qc-fade 0.5s ease both; overflow-y: auto; overflow-x: hidden;
+}
+.qc-overlay.is-leaving { animation: qc-fade-out 0.42s ease both; }
+.qc-overlay.is-leaving .qc-card { animation: qc-card-out 0.42s ease both; }
+
+/* ── The poster ─────────────────────────────────────── */
+.qc-card {
+  --mx: 0; --my: 0;
+  position: relative; width: min(460px, 100%, calc((100vh - 56px) * 0.7)); aspect-ratio: 370 / 530;
+  container-type: inline-size; border-radius: 10px; color: var(--qc-ink);
+  background: #FFFFFF; border-top: 6px solid var(--qc-yellow);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5), 0 12px 30px rgba(128, 0, 32, 0.25);
+  transform: perspective(1000px) rotateX(calc(var(--my) * -3deg)) rotateY(calc(var(--mx) * 4deg));
+  transition: transform 0.6s var(--qc-ease);
+  animation: qc-settle 1.2s ease-out both;
+}
+/* aged paper: grain, darker worn edges and a few stains */
+.qc-paper {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0; overflow: hidden;
+  background:
+    radial-gradient(ellipse 34% 26% at 100% 0%, rgba(110, 72, 32, 0.32), transparent 70%),
+    radial-gradient(ellipse 30% 22% at 0% 100%, rgba(110, 72, 32, 0.22), transparent 70%),
+    radial-gradient(circle at 78% 9%, rgba(120, 80, 35, 0.16) 0 3%, transparent 9%),
+    radial-gradient(circle at 12% 62%, rgba(120, 80, 35, 0.08) 0 4%, transparent 11%),
+    radial-gradient(ellipse 115% 100% at 45% 40%, transparent 58%, rgba(92, 58, 22, 0.34) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.25 0 0 0 0 0.12 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply; opacity: 0.75;
+}
+/* subtle inner border */
+.qc-card::before {
+  content: ''; position: absolute; inset: 2.6cqw; z-index: 3; pointer-events: none; border-radius: 6px;
+  border: 1px solid rgba(242, 194, 48, 0.55);
+}
+
+/* ── Left: quote ────────────────────────────────────── */
+.qc-text {
+  position: absolute; z-index: 2; left: 7.5cqw; top: 6cqw; width: 62cqw;
+  transform: translate3d(calc(var(--mx) * 6px), calc(var(--my) * 5px), 0); transition: transform 0.6s var(--qc-ease);
+}
+.qc-mark {
+  display: block; font-family: 'Playfair Display', Georgia, serif; font-weight: 800; color: var(--qc-bronze);
+  font-size: 30cqw; line-height: 0.62; height: 12cqw; letter-spacing: -0.06em;
+  animation: qc-drift 0.9s var(--qc-ease) 0.3s both;
+}
+.qc-mark-open { margin: 2cqw 0 4cqw -0.6cqw; }
+.qc-mark-close { margin: 7cqw 0 0 -0.6cqw; animation-delay: var(--d); }
+.qc-lines { margin: 0; padding: 0; }
+.qc-line { display: block; overflow: hidden; }
+.qc-line-in {
+  display: block; font-family: 'Oswald', 'Bebas Neue', Impact, sans-serif; font-weight: 700; text-transform: uppercase;
+  font-size: 9.6cqw; line-height: 1.12; letter-spacing: 0.005em; color: var(--qc-ink); white-space: nowrap;
+  transform: translateY(110%); animation: qc-rise 0.95s var(--qc-ease) var(--d) both;
+}
+.qc-hl {
+  font-style: normal; color: var(--qc-amber);
+  background: linear-gradient(100deg, #800020 0%, #800020 42%, #C2304F 50%, #800020 58%, #800020 100%);
+  background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: qc-shimmer 7s ease-in-out 2.4s infinite;
+}
+.qc-rule {
+  display: block; width: 33cqw; height: 3px; margin: 6cqw 0 4.4cqw; background: var(--qc-rule);
+  transform-origin: left center; transform: scaleX(0); animation: qc-draw 0.9s var(--qc-ease) var(--d) both;
+}
+.qc-author {
+  margin: 0; font-family: 'Inter', sans-serif; font-size: 3.1cqw; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--qc-ink); opacity: 0; animation: qc-fade 0.8s ease var(--d) both;
+}
+.qc-author-sub { display: block; margin-top: 1.6cqw; font-size: 2.5cqw; font-weight: 600; letter-spacing: 0.16em; color: var(--qc-bronze); }
+/* name-and-term version (no quote yet): start a little lower */
+.qc-card.is-profile .qc-text { top: 13cqw; }
+
+/* ── Right: the person ──────────────────────────────── */
+.qc-portrait {
+  position: absolute; z-index: 1; right: 0; bottom: 0; width: 58cqw; height: 88cqw;
+  display: flex; align-items: flex-end; justify-content: flex-end; border-radius: 0 0 10px 0;
+  transform: translate3d(calc(var(--mx) * 18px), calc(var(--my) * 12px), 0); transition: transform 0.6s var(--qc-ease);
+  animation: qc-portrait 1s ease-out 0.55s both;
+}
+.qc-sun {
+  position: absolute; right: -8cqw; top: -10cqw; width: 66cqw; aspect-ratio: 1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(242, 194, 48, 0.55) 0%, rgba(242, 194, 48, 0.22) 40%, rgba(242, 194, 48, 0) 70%);
+  animation: qc-pulse 7s ease-in-out infinite alternate;
+}
+.qc-portrait img {
+  position: relative; display: block; width: 100%; height: 100%; object-fit: cover; object-position: 0% 0%;
+  border-radius: 0 0 10px 0;
+  /* soft cut-out: the photo melts into the parchment on its open (left and top) sides */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 26%), linear-gradient(to bottom, transparent 0%, #000 14%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 0%, #000 26%), linear-gradient(to bottom, transparent 0%, #000 14%);
+  mask-composite: intersect;
+  filter: contrast(1.03) drop-shadow(0 25px 25px rgba(0, 0, 0, 0.18));
+}
+/* initials seal when there is no portrait yet */
+.qc-portrait:has(.qc-seal) { align-items: center; justify-content: center; }
+.qc-portrait:has(.qc-seal) .qc-sun { right: auto; top: 50%; left: 50%; width: 70cqw; translate: -50% -50%; }
+.qc-seal {
+  position: relative; display: grid; place-items: center; width: 42cqw; aspect-ratio: 1; margin: 30cqw 0 0 4cqw; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #FFFFFF 0%, #FFFDF5 70%, #FFF6D6 100%);
+  border: 2px solid var(--qc-yellow);
+  box-shadow: inset 0 0 0 2cqw #FFFFFF, inset 0 0 0 calc(2cqw + 2px) var(--color-primary, #800020), 0 22px 40px rgba(128, 0, 32, 0.22);
+}
+.qc-seal span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 13cqw; color: var(--qc-bronze); letter-spacing: 0.04em; }
+
+/* ── Dust motes ─────────────────────────────────────── */
+.qc-motes { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.qc-motes span {
+  position: absolute; border-radius: 50%; background: rgba(242, 194, 48, 0.85); box-shadow: 0 0 6px rgba(242, 194, 48, 0.8);
+  opacity: 0; animation: qc-mote linear infinite;
+}
+
+/* ── Close ──────────────────────────────────────────── */
+.qc-x {
+  position: absolute; top: -14px; right: -14px; z-index: 5; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; border: 1px solid #171717;
+  background: var(--qc-yellow); color: #171717; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s var(--qc-ease), background 0.3s ease;
+}
+.qc-x:hover { transform: rotate(90deg); background: #FFFFFF; }
+.qc-x:focus-visible { outline: 2px solid var(--qc-amber); outline-offset: 3px; }
+@media (max-width: 520px) { .qc-x { top: 8px; right: 8px; } }
+
+/* Tamil / Sinhala lines: their own typefaces, a touch smaller */
+.qc-lines:lang(ta) .qc-line-in { font-family: 'Noto Sans Tamil', sans-serif; font-size: 7cqw; line-height: 1.35; text-transform: none; white-space: normal; }
+.qc-lines:lang(si) .qc-line-in { font-family: 'Noto Sans Sinhala', sans-serif; font-size: 7cqw; line-height: 1.35; text-transform: none; white-space: normal; }
+
+/* ── Keyframes ──────────────────────────────────────── */
+@keyframes qc-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes qc-fade-out { to { opacity: 0; } }
+@keyframes qc-settle { from { opacity: 0; transform: perspective(1000px) scale(1.05); } to { opacity: 1; } }
+@keyframes qc-card-out { to { opacity: 0; transform: perspective(1000px) scale(0.97) translateY(10px); } }
+@keyframes qc-drift { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes qc-rise { to { transform: none; } }
+@keyframes qc-draw { to { transform: scaleX(1); } }
+@keyframes qc-portrait { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; } }
+@keyframes qc-pulse { from { opacity: 0.6; transform: scale(1); } to { opacity: 0.95; transform: scale(1.06); } }
+@keyframes qc-shimmer { 0%, 55% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
+@keyframes qc-mote {
+  0% { opacity: 0; transform: translate(0, 0); }
+  15% { opacity: 0.85; }
+  85% { opacity: 0.6; }
+  100% { opacity: 0; transform: translate(40px, -90px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qc-overlay, .qc-card, .qc-mark, .qc-line-in, .qc-rule, .qc-author, .qc-portrait, .qc-sun, .qc-hl, .qc-motes span { animation: none !important; }
+  .qc-line-in, .qc-rule { transform: none; }
+  .qc-author { opacity: 1; }
+  .qc-card, .qc-text, .qc-portrait { transform: none; transition: none; }
+}
+
+/* TVK version: plain white poster, no parchment texture */
+.qc-paper { display: none; }
+
+/* name under the ideology: small, black; years in maroon */
+.qc-card:not(.is-profile) .qc-author { max-width: 46cqw; font-size: 2.9cqw; letter-spacing: 0.1em; line-height: 1.45; }
+.qc-card:not(.is-profile) .qc-author-sub { margin-top: 1.2cqw; font-size: 2.7cqw; letter-spacing: 0.14em; font-weight: 700; }
+/* allow a long ideology line to wrap instead of running off the poster */
+.qc-line-in { white-space: normal; }

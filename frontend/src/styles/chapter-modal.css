@@ -1,0 +1,204 @@
+/* ── Cinematic chapter reader — "Our Journey — Six Chapters" ─────────────
+   One editorial language (ivory / ink / maroon / gold), six animation
+   families: archival reveal · timeline draw · layered panels · spotlight ·
+   growing milestones · soft light. All decorative layers are aria-hidden. */
+
+.chm-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background: rgba(18, 8, 12, 0.62);
+  backdrop-filter: blur(3px);
+  animation: chm-fade 0.35s ease both;
+}
+.chm-sheet {
+  position: relative;
+  width: min(720px, 100%);
+  max-height: min(86vh, 900px);
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #FDFBF6 0%, #F7F1E6 100%);
+  border: 1px solid #E7DCC8;
+  border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(20, 5, 10, 0.45), 0 4px 18px rgba(20, 5, 10, 0.2);
+  overflow: hidden;
+  outline: none;
+}
+.chm-scroll { overflow-y: auto; padding: 44px 48px 30px; scrollbar-width: thin; }
+.chm-x {
+  position: absolute; top: 14px; right: 14px; z-index: 5;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid #E2D8C4; background: rgba(255, 255, 255, 0.7);
+  color: #4A1024; display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s, transform 0.2s;
+}
+.chm-x:hover { background: #fff; transform: rotate(90deg); }
+
+.chm-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.chm-fx i { position: absolute; display: block; }
+
+.chm-head { position: relative; }
+.chm-eyebrow {
+  display: inline-block; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; color: #7A1735;
+}
+.chm-heading-rule { display:block; width:76px; height:3px; margin:16px 0 0; background:linear-gradient(90deg,#650D24 0%,#FFD84D 100%); transform:scaleX(0); transform-origin:left center; animation:chm-rule-in .65s cubic-bezier(.22,1,.36,1) .2s both; }
+@keyframes chm-rule-in { to { transform:scaleX(1); } }
+.chm-ghost {
+  position: absolute; right: 0; top: -30px;
+  font-family: 'Playfair Display', serif; font-size: 6.2rem; line-height: 1;
+  color: rgba(122, 23, 53, 0.07); user-select: none; pointer-events: none;
+}
+.chm-title {
+  margin: 9px 0 14px; max-width: 560px;
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: clamp(1.7rem, 4vw, 2.5rem); line-height: 1.15; color: #1c1c1c;
+}
+.chm-lead {
+  margin: 0 0 22px; max-width: 600px;
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 1.08rem; line-height: 1.65; color: #4A1024;
+}
+.chm-body { border-top: 1px solid #EAE1D0; padding-top: 20px; }
+.chm-body p {
+  margin: 0 0 16px; max-width: 640px;
+  font-size: 1rem; line-height: 1.85; color: #33302C;
+}
+.chm-body p::first-letter { font-weight: 600; }
+
+.chm-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 48px 20px;
+  border-top: 1px solid #EAE1D0;
+  background: rgba(255, 255, 255, 0.45);
+}
+.chm-nav {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 999px;
+  border: 1px solid #D8CBB2; background: transparent;
+  color: #4A1024; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.chm-nav:hover:not(:disabled) { background: #7A1735; border-color: #7A1735; color: #fff; }
+.chm-nav:disabled { opacity: 0.35; cursor: default; }
+.chm-count { font-size: 0.78rem; letter-spacing: 0.14em; color: #8a7a63; font-variant-numeric: tabular-nums; }
+
+/* shared entrance pieces */
+@keyframes chm-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes chm-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes chm-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.chm-eyebrow { animation: chm-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both; }
+.chm-ghost  { animation: chm-fade 0.9s ease 0.1s both; }
+.chm-title  { animation: chm-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both; }
+.chm-lead   { animation: chm-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+.chm-body p { animation: chm-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0.6s) both; }
+.chm-foot   { animation: chm-fade 0.6s ease 0.9s both; }
+
+/* ═══ Chapter 01 — archival document reveal ═══ */
+.chm-v1 .chm-sheet { animation: chm-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
+.chm-v1 .chm-backdrop { animation: chm-fade 1.1s ease both, chm-warm 1.4s ease both; }
+@keyframes chm-warm { from { background: rgba(12, 6, 9, 0.88); } to { background: rgba(74, 16, 36, 0.5); } }
+.chm-v1 .chm-doc {
+  border-radius: 6px;
+  background: linear-gradient(160deg, #F3EAD6, #E7D9BE);
+  border: 1px solid #D8C8A8;
+  box-shadow: 0 18px 40px rgba(30, 10, 15, 0.35);
+}
+.chm-v1 .chm-doc.d1 { width: 340px; height: 430px; right: -60px; bottom: -40px; transform: rotate(7deg); animation: chm-doc-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+.chm-v1 .chm-doc.d2 { width: 300px; height: 390px; right: 90px; bottom: -70px; transform: rotate(-5deg); background: linear-gradient(160deg, #EFE4CC, #DCCFAE); animation: chm-doc-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both; }
+.chm-v1 .chm-doc.d3 { width: 260px; height: 340px; right: 220px; bottom: -90px; transform: rotate(3deg); animation: chm-doc-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both; }
+@keyframes chm-doc-in { from { opacity: 0; transform: translateY(60px) rotate(var(--r, 0deg)); } to { opacity: 1; transform: translateY(0) rotate(var(--r, 0deg)); } }
+.chm-v1 .chm-doc.d1 { --r: 7deg; } .chm-v1 .chm-doc.d2 { --r: -5deg; } .chm-v1 .chm-doc.d3 { --r: 3deg; }
+
+/* ═══ Chapter 02 — timeline draws itself ═══ */
+.chm-v2 .chm-sheet { animation: chm-fade 0.6s ease both; }
+.chm-v2 .chm-tl-line {
+  left: 48px; right: 48px; top: 96px; height: 2px;
+  background: linear-gradient(90deg, #7A1735, #E5B94C);
+  transform-origin: left center;
+  animation: chm-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+@keyframes chm-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.chm-v2 .chm-tl-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #7A1735; border: 2px solid #F7F1E6;
+  box-shadow: 0 0 0 3px rgba(122, 23, 53, 0.25);
+  top: 92px;
+}
+.chm-v2 .chm-tl-dot.a { left: 18%; } .chm-v2 .chm-tl-dot.b { left: 50%; } .chm-v2 .chm-tl-dot.c { right: 18%; }
+.chm-v2 .chm-tl-dot { animation: chm-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.chm-v2 .chm-tl-dot.a { animation-delay: 0.55s; } .chm-v2 .chm-tl-dot.b { animation-delay: 0.8s; } .chm-v2 .chm-tl-dot.c { animation-delay: 1.05s; }
+@keyframes chm-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+
+/* ═══ Chapter 03 — layered panels separate ═══ */
+.chm-v3 .chm-sheet { animation: chm-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
+.chm-v3 .chm-backdrop { animation: chm-fade 0.8s ease both, chm-depth 1.6s ease both; }
+@keyframes chm-depth { from { background: rgba(30, 8, 14, 0.8); } to { background: rgba(18, 8, 12, 0.55); } }
+.chm-v3 .chm-panel {
+  border-radius: 14px;
+  border: 1px solid rgba(122, 23, 53, 0.25);
+}
+.chm-v3 .chm-panel.p1 { width: 62%; height: 70%; left: -12%; top: 12%; background: rgba(122, 23, 53, 0.14); transform: rotate(-4deg); animation: chm-panel-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+.chm-v3 .chm-panel.p2 { width: 58%; height: 66%; right: -10%; top: 20%; background: rgba(229, 185, 76, 0.16); transform: rotate(3deg); animation: chm-panel-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+.chm-v3 .chm-panel.p3 { width: 50%; height: 60%; left: 24%; bottom: -14%; background: rgba(74, 16, 36, 0.12); transform: rotate(-2deg); animation: chm-panel-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both; }
+@keyframes chm-panel-in { from { opacity: 0; transform: translateY(30px) rotate(0deg) scale(0.96); } to { opacity: 1; } }
+
+/* ═══ Chapter 04 — dramatic spotlight ═══ */
+.chm-v4 .chm-backdrop { background: rgba(8, 4, 7, 0.82); animation: chm-fade 0.5s ease both, chm-spotlight-bg 1.8s ease 0.3s both; }
+@keyframes chm-spotlight-bg { to { background: rgba(30, 10, 16, 0.6); } }
+.chm-v4 .chm-sheet { animation: chm-fade 0.9s ease 0.2s both; }
+.chm-v4 .chm-spot {
+  left: 50%; top: -20%; width: 900px; height: 700px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(255, 236, 190, 0.5), rgba(255, 236, 190, 0.12) 55%, transparent 75%);
+  animation: chm-spot-sweep 2s ease 0.4s both;
+}
+@keyframes chm-spot-sweep { from { opacity: 0; transform: translateX(-50%) scale(0.7); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+.chm-v4 .chm-title { text-shadow: 0 0 30px rgba(255, 220, 150, 0.35); }
+
+/* ═══ Chapter 05 — expanding milestones ═══ */
+.chm-v5 .chm-sheet { animation: chm-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
+.chm-v5 .chm-grow-line {
+  left: 52px; top: 110px; bottom: 60px; width: 2px;
+  background: linear-gradient(180deg, #7A1735, #E5B94C);
+  transform-origin: top center;
+  animation: chm-grow 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+@keyframes chm-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.chm-v5 .chm-grow-dot {
+  left: 47px; width: 12px; height: 12px; border-radius: 50%;
+  background: #E5B94C; border: 2px solid #7A1735;
+}
+.chm-v5 .chm-grow-dot.a { top: 26%; } .chm-v5 .chm-grow-dot.b { top: 52%; } .chm-v5 .chm-grow-dot.c { top: 78%; }
+.chm-v5 .chm-grow-dot { animation: chm-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.chm-v5 .chm-grow-dot.a { animation-delay: 0.7s; } .chm-v5 .chm-grow-dot.b { animation-delay: 0.95s; } .chm-v5 .chm-grow-dot.c { animation-delay: 1.2s; }
+
+/* ═══ Chapter 06 — soft light reveal ═══ */
+.chm-v6 .chm-sheet { animation: chm-fade 1s ease 0.15s both, chm-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.chm-v6 .chm-light {
+  left: 50%; top: -30%; width: 1000px; height: 800px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(255, 240, 200, 0.55), rgba(255, 240, 200, 0.15) 55%, transparent 78%);
+  animation: chm-light-in 2.2s ease 0.3s both;
+}
+@keyframes chm-light-in { from { opacity: 0; transform: translateX(-50%) scale(0.85); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+.chm-v6 .chm-title { animation-duration: 0.9s; }
+
+/* mobile: near-fullscreen, comfortable reading */
+@media (max-width: 640px) {
+  .chm-backdrop { padding: 10px; align-items: flex-end; }
+  .chm-sheet { max-height: 92vh; border-radius: 16px 16px 10px 10px; }
+  .chm-scroll { padding: 34px 22px 22px; }
+  .chm-foot { padding: 12px 22px 14px; }
+  .chm-ghost { font-size: 4rem; top: -18px; }
+  .chm-v1 .chm-doc, .chm-v5 .chm-grow-line, .chm-v5 .chm-grow-dot { display: none; }
+  .chm-v2 .chm-tl-line, .chm-v2 .chm-tl-dot { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chm-heading-rule { animation:none; transform:none; }
+  .chm-backdrop, .chm-sheet, .chm-fx i,
+  .chm-eyebrow, .chm-ghost, .chm-title, .chm-lead, .chm-body p, .chm-foot {
+    animation: none !important;
+  }
+}

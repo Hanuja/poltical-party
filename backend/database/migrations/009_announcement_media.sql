@@ -1,0 +1,1 @@
+ALTER TABLE announcements ADD COLUMN media_json MEDIUMTEXT DEFAULT NULL AFTER video_url;

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+  <defs>
+    <linearGradient id="skym" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0206"/>
+      <stop offset="0.55" stop-color="#3a0a13"/>
+      <stop offset="1" stop-color="#7c1a24"/>
+    </linearGradient>
+    <radialGradient id="glowm" cx="0.5" cy="0.38" r="0.6">
+      <stop offset="0" stop-color="#ffc107" stop-opacity="0.4"/>
+      <stop offset="0.6" stop-color="#ffc107" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#ffc107" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beamm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd766" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#ffd766" stop-opacity="0"/>
+    </linearGradient>
+    <symbol id="personm" viewBox="0 0 40 90">
+      <circle cx="20" cy="14" r="11"/>
+      <path d="M4 90 C4 58 10 46 20 46 C30 46 36 58 36 90 Z"/>
+      <path d="M20 46 L20 34 M20 38 L8 26 M20 38 L32 24" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#skym)"/>
+  <rect width="800" height="1000" fill="url(#glowm)"/>
+  <polygon points="330,0 470,0 560,700 240,700" fill="url(#beamm)" opacity="0.5"/>
+
+  <!-- stage -->
+  <rect x="0" y="700" width="800" height="300" fill="#160409"/>
+  <rect x="0" y="696" width="800" height="6" fill="#ffc107" opacity="0.55"/>
+
+  <!-- speaker -->
+  <g fill="#0d0205">
+    <rect x="360" y="520" width="90" height="180" rx="8"/>
+    <circle cx="405" cy="488" r="36"/>
+    <path d="M345 620 L465 620 L490 700 L320 700 Z"/>
+  </g>
+  <ellipse cx="405" cy="712" rx="140" ry="16" fill="#ffc107" opacity="0.18"/>
+
+  <!-- flag -->
+  <g transform="translate(690,300) scale(1.5)">
+    <rect x="28" y="4" width="4" height="86" rx="2" fill="#0d0205"/>
+    <path d="M32 8 L56 16 L32 28 Z" fill="#d82027"/>
+  </g>
+
+  <!-- crowd -->
+  <g fill="#1d060c">
+    <use href="#personm" x="30" y="640" width="36" height="82"/>
+    <use href="#personm" x="85" y="655" width="32" height="72"/>
+    <use href="#personm" x="130" y="638" width="38" height="86"/>
+    <use href="#personm" x="185" y="652" width="32" height="74"/>
+    <use href="#personm" x="230" y="642" width="36" height="80"/>
+    <use href="#personm" x="290" y="658" width="30" height="70"/>
+    <use href="#personm" x="335" y="640" width="37" height="84"/>
+    <use href="#personm" x="470" y="655" width="32" height="74"/>
+    <use href="#personm" x="515" y="640" width="37" height="84"/>
+    <use href="#personm" x="570" y="656" width="30" height="70"/>
+    <use href="#personm" x="615" y="642" width="36" height="80"/>
+    <use href="#personm" x="670" y="656" width="32" height="72"/>
+  </g>
+  <g fill="#0d0205">
+    <use href="#personm" x="50" y="720" width="50" height="130"/>
+    <use href="#personm" x="120" y="735" width="44" height="115"/>
+    <use href="#personm" x="190" y="718" width="54" height="140"/>
+    <use href="#personm" x="270" y="732" width="46" height="122"/>
+    <use href="#personm" x="340" y="722" width="52" height="134"/>
+    <use href="#personm" x="430" y="736" width="42" height="112"/>
+    <use href="#personm" x="490" y="720" width="52" height="136"/>
+    <use href="#personm" x="580" y="734" width="44" height="118"/>
+    <use href="#personm" x="645" y="724" width="50" height="130"/>
+    <use href="#personm" x="720" y="738" width="42" height="110"/>
+  </g>
+  <g stroke="#0d0205" stroke-width="6" stroke-linecap="round">
+    <path d="M205 780 L190 715"/><path d="M215 785 L240 720"/>
+    <path d="M360 790 L345 725"/><path d="M370 795 L395 730"/>
+    <path d="M520 785 L505 720"/><path d="M530 790 L555 725"/>
+    <path d="M680 790 L665 725"/>
+  </g>
+  <g fill="#ffe9a8">
+    <circle cx="190" cy="713" r="5"/><circle cx="240" cy="718" r="5"/>
+    <circle cx="345" cy="723" r="5"/><circle cx="395" cy="728" r="5"/>
+    <circle cx="505" cy="718" r="5"/><circle cx="555" cy="723" r="5"/>
+    <circle cx="665" cy="723" r="5"/>
+  </g>
+
+  <defs>
+    <radialGradient id="vignettem" cx="0.5" cy="0.5" r="0.95">
+      <stop offset="0.5" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.5"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#vignettem)"/>
+</svg>
