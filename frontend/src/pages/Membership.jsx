@@ -10,6 +10,7 @@ import { useReveal, scrollToId } from '../components/membership/memUi'
 import PageBanner from '../components/PageBanner'
 import WhyJoin from '../components/membership/WhyJoin'
 import ApplicationForm from '../components/membership/ApplicationForm'
+import ApplicationMethodSelector from '../components/membership/ApplicationMethodSelector'
 import SuccessScreen from '../components/membership/SuccessScreen'
 import TrackStatus from '../components/membership/TrackStatus'
 import MembershipExperienceHero from '../components/membership/MembershipExperienceHero'
@@ -26,6 +27,8 @@ export default function Membership() {
   const [result, setResult] = useState(null)
   const [prefill, setPrefill] = useState(null)
   const [approvedCount, setApprovedCount] = useState(0)
+  const [showMethodSelector, setShowMethodSelector] = useState(true)
+  const [selectedMethod, setSelectedMethod] = useState(null)
 
   useEffect(() => { setPageSEO({ title: s.seoTitle, description: s.seoDesc }) }, [s])
   useReveal(rootRef, [loading, !!result])
@@ -71,13 +74,13 @@ export default function Membership() {
 
   return (
     <div className="mb-root" ref={rootRef} lang={language}>
-      <PageBanner breadcrumbItems={[{ label: 'Join Us' }]} />
+      <PageBanner breadcrumbItems={[{ label: s.hero.eyebrow }]} />
 
       <MembershipExperienceHero language={language} count={approvedCount} onJoin={() => scrollToId('mb-apply')} />
 
       <WhyJoin s={s} adminImages={page?.whyImages} />
 
-      <section id="mb-apply" className="mb-apply" aria-label={s.form.title}>
+      <section id="mb-apply" className={`mb-apply${showMethodSelector && !loading && !error && !result ? ' mb-apply-method' : ''}`} aria-label={s.form.title}>
         <div className="mb-wrap">
           {loading && (
             <div className="mb-card mb-state" role="status"><Loader2 size={28} className="mb-spin" aria-hidden="true" /><p>{s.loading}</p></div>
@@ -90,7 +93,18 @@ export default function Membership() {
           )}
           {!loading && !error && page && (result
             ? <SuccessScreen result={result} s={s} lang={language} message={page.successMessage} onTrack={goTrack} />
-            : <ApplicationForm page={page} s={s} lang={language} onSubmitted={onSubmitted} onTrack={goTrack} />)}
+            : showMethodSelector
+              ? <ApplicationMethodSelector
+                  s={s}
+                  lang={language}
+                  districts={page?.meta?.districts || []}
+                  onSelectOnline={() => {
+                    setSelectedMethod('online')
+                    setShowMethodSelector(false)
+                  }}
+                  onSubmitted={onSubmitted}
+                />
+              : <ApplicationForm page={page} s={s} lang={language} onSubmitted={onSubmitted} onTrack={goTrack} />)}
         </div>
       </section>
 

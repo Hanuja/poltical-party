@@ -5,12 +5,15 @@ import {
 } from 'lucide-react'
 import { Field, CheckRow, Chips, Eyebrow, scrollToId } from './memUi'
 import { fill } from './membershipText'
+import PledgeChecklist from './PledgeChecklist'
+import PledgePagination from './PledgePagination'
+import { PLEDGE_READER_COPY, PLEDGES_REQUIRED_MESSAGE } from './membershipPledges'
 import { memApi } from './memApi'
 import {
-  EMPTY_FORM, DECLARATION_KEYS, validateStep, toPayload, fromDraft, ageFrom, stepOfField,
+  EMPTY_FORM, validateStep, toPayload, fromDraft, ageFrom, stepOfField,
 } from './memForm'
 
-const TOTAL = 5
+const TOTAL = 7
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 function fmtDate(iso, lang, withTime = false) {
@@ -95,8 +98,7 @@ function ResumePanel({ s, onRestored, onCancel }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState('idle')
   const [error, setError] = useState('')
-  const submit = async (e) => {
-    e.preventDefault()
+  const submit = async () => {
     if (!code.trim() || !email.trim()) { setError(s.errors.required); return }
     setState('loading'); setError('')
     try {
@@ -108,7 +110,7 @@ function ResumePanel({ s, onRestored, onCancel }) {
     }
   }
   return (
-    <form className="mb-resume" onSubmit={submit} noValidate>
+    <div className="mb-resume">
       <h3>{s.resume.title}</h3>
       <p>{s.resume.text}</p>
       <div className="mb-grid-2">
@@ -118,11 +120,11 @@ function ResumePanel({ s, onRestored, onCancel }) {
       {error && <p className="mb-msg mb-msg-error" role="alert">{error}</p>}
       <div className="mb-row-actions">
         <button type="button" className="mb-btn mb-btn-quiet" onClick={onCancel}>{s.resume.cancel}</button>
-        <button type="submit" className="mb-btn mb-btn-primary" disabled={state === 'loading'}>
+        <button type="button" className="mb-btn mb-btn-primary" onClick={submit} disabled={state === 'loading'}>
           {state === 'loading' ? <Loader2 size={18} className="mb-spin" aria-hidden="true" /> : <RotateCcw size={18} aria-hidden="true" />}{s.resume.button}
         </button>
       </div>
-    </form>
+    </div>
   )
 }
 
@@ -182,6 +184,7 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
   const firstRender = useRef(true)
 
   const meta = page.meta
+  const pledgeReaderCopy = PLEDGE_READER_COPY[lang] || PLEDGE_READER_COPY.en
   const minAge = page.minAge
   const requirePhoto = page.requirePhoto
   const opts = { minAge, requirePhoto, photo }
@@ -196,6 +199,10 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
     setForm((f) => ({ ...f, declarations: { ...f.declarations, [k]: v } }))
     setErrors((er) => { const n = { ...er }; delete n[`declarations.${k}`]; return n })
   }
+  const setPledge = (k, value) => {
+    setForm((f) => ({ ...f, pledges: { ...f.pledges, [k]: value } }))
+    setErrors((er) => { const n = { ...er }; delete n.pledges; return n })
+  }
 
   const districts = useMemo(() => meta.districts.filter((d) => String(d.provinceId) === String(form.provinceId)), [meta, form.provinceId])
   const divisions = useMemo(() => meta.divisions.filter((d) => String(d.districtId) === String(form.districtId)), [meta, form.districtId])
@@ -204,7 +211,9 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
   const err = (field) => {
     const code = errors[field]
     if (!code) return null
+    if (field === 'pledges' && code === 'pledges_incomplete') return pledgeReaderCopy.validation || PLEDGES_REQUIRED_MESSAGE
     if (code === 'too_young') return fill(s.errors.too_young, { age: minAge })
+    if (code === 'required' && ['gender', 'maritalStatus'].includes(field)) return s.errors.required
     if (field === 'photo') return s.errors[code] || s.errors[`photo_${code}`] || s.errors.required
     if (code === 'invalid') {
       if (field === 'phone') return s.errors.phone
@@ -303,18 +312,38 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
 
   const optionLabel = (list, id) => list.find((x) => String(x.id) === String(id))?.name || s.form.none
   const reviewRows = [
-    [1, s.form.fullName, form.fullName],
+    [1, s.form.fullNameTa, form.fullNameTa],
+    [1, s.form.fullNameEn, form.fullNameEn],
+    [1, s.form.nic, form.nic.toUpperCase()],
     [1, s.form.dob, form.dateOfBirth ? `${fmtDate(`${form.dateOfBirth}T00:00:00`, lang)}${age !== null && age >= 0 ? ` · ${fill(s.form.age, { n: age })}` : ''}` : ''],
+    [1, s.form.gender, form.gender],
+    [1, s.form.maritalStatus, form.maritalStatus],
+    [2, s.form.permanentAddress, form.permanentAddress],
+    [2, s.form.currentAddress, form.currentAddress],
+    [2, s.form.gnDivision, form.gnDivision],
+    [2, s.form.gnNumber, form.gnNumber],
+    [2, s.form.dsDivision, form.dsDivision],
+    [2, s.form.localAuthority, form.localAuthority],
+    [2, s.form.electoralConstituency, form.electoralConstituency],
     [2, s.form.district, `${optionLabel(meta.districts, form.districtId)} · ${optionLabel(meta.divisions, form.divisionId)}`],
-    [2, s.form.email, form.email],
+    [2, s.form.province, form.province],
     [2, s.form.phone, form.phone],
-    [3, s.form.nic, form.nic.toUpperCase()],
-    [4, s.form.occupation, form.occupation],
-    [4, s.form.interests, form.interests.map((k) => s.form.interestOpts[k]).join(', ')],
+    [2, s.form.whatsapp, form.whatsapp],
+    [2, s.form.email, form.email],
+    [5, s.form.education, form.education.map((k) => s.form.educationOpts[k]).join(', ')],
+    [5, s.form.employmentStatus, form.employmentStatus.map((k) => s.form.employmentOpts[k]).join(', ')],
+    [6, s.form.interests, form.interests.map((k) => s.form.interestOpts[k]).join(', ')],
   ]
 
   return (
     <div className="mb-apply-grid">
+      <aside className="mb-privacy" aria-labelledby="mb-privacy-title">
+        <ShieldCheck size={26} aria-hidden="true" className="mb-privacy-icon" />
+        <h3 id="mb-privacy-title">{pledgeReaderCopy.sectionTitle}</h3>
+        <Link to="/privacy-policy" className="mb-inline-link">{pledgeReaderCopy.privacyPolicy}<ArrowRight size={14} aria-hidden="true" /></Link>
+        <PledgePagination language={lang} />
+      </aside>
+
       <form className="mb-card mb-form" onSubmit={submit} noValidate aria-labelledby="mb-form-title">
         <div className="mb-form-top">
           <div>
@@ -340,17 +369,18 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
 
           {step === 1 && (
             <div className="mb-fields">
-              <Field label={s.form.fullName} required value={form.fullName} onChange={set('fullName')} error={err('fullName')} autoComplete="name" maxLength={160} />
+              <Field label={s.form.fullNameTa} required value={form.fullNameTa} onChange={set('fullNameTa')} error={err('fullNameTa')} autoComplete="name" maxLength={160} />
+              <Field label={s.form.fullNameEn} required value={form.fullNameEn} onChange={set('fullNameEn')} error={err('fullNameEn')} autoComplete="name" maxLength={160} />
               <div className="mb-grid-2">
+                <Field label={s.form.nic} required value={form.nic} onChange={set('nic')} error={err('nic')} hint={s.form.nicHint}
+                  autoComplete="off" spellCheck="false" maxLength={14} className="mb-field-mono" />
                 <Field label={s.form.dob} required type="date" value={form.dateOfBirth} onChange={set('dateOfBirth')} error={err('dateOfBirth')}
                   max={new Date().toISOString().slice(0, 10)} min="1900-01-01" autoComplete="bday" />
-                <div className="mb-age" aria-live="polite">
-                  <span className="mb-age-num">{age !== null && age >= 0 && age <= 120 ? age : '—'}</span>
-                  <span className="mb-age-label">{fill(s.form.age, { n: '' }).replace(/[:\s]+$/, '')}</span>
-                </div>
               </div>
-              <Chips legend={s.form.gender} name="gender" value={form.gender} onChange={set('gender')}
-                options={meta.genders.map((g) => [g, s.form.genders[g]])} />
+              <Chips legend={s.form.gender} name="gender" required error={err('gender')} value={form.gender} onChange={set('gender')}
+                options={['male', 'female', 'other'].map((g) => [g, s.form.genderOpts?.[g] ?? s.form.genders?.[g] ?? g])} />
+              <Chips legend={s.form.maritalStatus} name="maritalStatus" required error={err('maritalStatus')} value={form.maritalStatus} onChange={set('maritalStatus')}
+                options={Object.entries(s.form.maritalStatusOpts || {}).map(([k, v]) => [k, v])} />
               {requirePhoto && (
                 <PhotoField s={s} photo={photo} setPhoto={(f) => { setPhoto(f); setErrors((er) => { const n = { ...er }; delete n.photo; return n }) }}
                   error={err('photo')} setError={(code) => setErrors((er) => (code ? { ...er, photo: code } : er))} />
@@ -360,13 +390,19 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
 
           {step === 2 && (
             <div className="mb-fields">
-              <Field as="textarea" rows={3} label={s.form.residential} required value={form.residentialAddress} onChange={set('residentialAddress')}
-                error={err('residentialAddress')} autoComplete="street-address" maxLength={500} />
-              <CheckRow checked={form.mailingSame} onChange={set('mailingSame')}>{s.form.mailingSame}</CheckRow>
-              {!form.mailingSame && (
-                <Field as="textarea" rows={3} label={s.form.mailing} required value={form.mailingAddress} onChange={set('mailingAddress')}
-                  error={err('mailingAddress')} maxLength={500} />
-              )}
+              <Field as="textarea" rows={3} label={s.form.permanentAddress} required value={form.permanentAddress} onChange={set('permanentAddress')}
+                error={err('permanentAddress')} autoComplete="street-address" maxLength={500} />
+              <Field as="textarea" rows={2} label={s.form.currentAddress} value={form.currentAddress} onChange={set('currentAddress')}
+                autoComplete="street-address" maxLength={500} />
+              <div className="mb-grid-2">
+                <Field label={s.form.gnDivision} required value={form.gnDivision} onChange={set('gnDivision')} error={err('gnDivision')} maxLength={100} />
+                <Field label={s.form.gnNumber} value={form.gnNumber} onChange={set('gnNumber')} maxLength={20} />
+              </div>
+              <div className="mb-grid-2">
+                <Field label={s.form.dsDivision} required value={form.dsDivision} onChange={set('dsDivision')} error={err('dsDivision')} maxLength={100} />
+                <Field label={s.form.localAuthority} value={form.localAuthority} onChange={set('localAuthority')} maxLength={100} />
+              </div>
+              <Field label={s.form.electoralConstituency} value={form.electoralConstituency} onChange={set('electoralConstituency')} maxLength={100} />
               <div className="mb-grid-3">
                 <Field as="select" label={s.form.province} required value={form.provinceId} error={err('provinceId')}
                   onChange={(e) => { setForm((f) => ({ ...f, provinceId: e.target.value, districtId: '', divisionId: '' })); setErrors((er) => ({ ...er, provinceId: undefined })) }}>
@@ -386,10 +422,12 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
                   {divisions.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </Field>
               </div>
-              <div className="mb-grid-2">
+              <div className="mb-grid-3">
                 <Field label={s.form.phone} required type="tel" inputMode="tel" value={form.phone} onChange={set('phone')} error={err('phone')}
                   hint={s.form.phoneHint} autoComplete="tel" maxLength={22} />
-                <Field label={s.form.email} required type="email" value={form.email} onChange={set('email')} error={err('email')}
+                <Field label={s.form.whatsapp} type="tel" inputMode="tel" value={form.whatsapp} onChange={set('whatsapp')}
+                  autoComplete="tel" maxLength={22} />
+                <Field label={s.form.email} type="email" value={form.email} onChange={set('email')} error={err('email')}
                   hint={s.form.emailHint} autoComplete="email" maxLength={160} />
               </div>
             </div>
@@ -397,31 +435,135 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
 
           {step === 3 && (
             <div className="mb-fields">
-              <Field label={s.form.nic} required value={form.nic} onChange={set('nic')} error={err('nic')} hint={s.form.nicHint}
-                autoComplete="off" spellCheck="false" maxLength={14} className="mb-field-mono" />
-              <Chips legend={s.form.citizenship} required name="citizenship" value={form.citizenship} onChange={set('citizenship')} error={err('citizenship')}
-                options={meta.citizenship.map((c) => [c, s.form.citizenshipOpts[c]])} />
-              <CheckRow checked={form.eligible} onChange={set('eligible')} error={err('eligible')}>
-                {minAge > 0 ? fill(s.form.eligible, { age: minAge }) : s.form.eligibleNoAge}<span className="mb-req" aria-hidden="true"> *</span>
-              </CheckRow>
+              <section className="mb-pledge-section" aria-labelledby="mb-pledge-title">
+                <h4 id="mb-pledge-title">{pledgeReaderCopy.declarationTitle}</h4>
+                <p className="mb-pledge-intro">{pledgeReaderCopy.intro}</p>
+                <PledgeChecklist values={form.pledges} onChange={setPledge} className="mb-pledge-list-declaration" language={lang} />
+                {err('pledges') && <p className="mb-msg mb-msg-error" role="alert">{err('pledges')}</p>}
+              </section>
+              <div className="mb-decls">
+                {['citizen', 'noOtherParty', 'govEmployee', 'trueInfo'].map((k) => (
+                  <CheckRow key={k} checked={form.declarations[k]} onChange={setDecl(k)} error={err(`declarations.${k}`)}>
+                    {s.form.decl[k]}<span className="mb-req" aria-hidden="true"> *</span>
+                  </CheckRow>
+                ))}
+              </div>
             </div>
           )}
 
           {step === 4 && (
             <div className="mb-fields">
-              <Field label={s.form.occupation} required value={form.occupation} onChange={set('occupation')} error={err('occupation')} autoComplete="organization-title" maxLength={120} />
-              <Chips legend={s.form.interests} multi name="interests" value={form.interests} onChange={set('interests')}
-                options={meta.interests.map((k) => [k, s.form.interestOpts[k]])} />
-              <Chips legend={s.form.previous} required name="previousMember" value={form.previousMember} error={err('previousMember')}
-                onChange={(v) => { setForm((f) => ({ ...f, previousMember: v })); setErrors((er) => ({ ...er, previousMember: undefined })) }}
-                options={[[true, s.form.yes], [false, s.form.no]]} />
-              {form.previousMember && (
-                <Field label={s.form.previousOrg} required value={form.previousOrganisation} onChange={set('previousOrganisation')} error={err('previousOrganisation')} maxLength={160} />
-              )}
+              <div className="mb-signature-pad">
+                <label className="mb-field-label">{s.form.signature} <span className="mb-req">*</span></label>
+                <canvas
+                  ref={(el) => {
+                    if (el && !el.dataset.init) {
+                      el.dataset.init = 'true'
+                      const ctx = el.getContext('2d')
+                      ctx.strokeStyle = '#171717'
+                      ctx.lineWidth = 2
+                      ctx.lineCap = 'round'
+                      ctx.lineJoin = 'round'
+                    }
+                  }}
+                  width="400"
+                  height="150"
+                  className="mb-signature-canvas"
+                  onMouseDown={(e) => {
+                    const canvas = e.target
+                    const ctx = canvas.getContext('2d')
+                    const rect = canvas.getBoundingClientRect()
+                    const x = e.clientX - rect.left
+                    const y = e.clientY - rect.top
+                    ctx.beginPath()
+                    ctx.moveTo(x, y)
+                    const onMove = (ev) => {
+                      const mx = ev.clientX - rect.left
+                      const my = ev.clientY - rect.top
+                      ctx.lineTo(mx, my)
+                      ctx.stroke()
+                    }
+                    const onUp = () => {
+                      canvas.removeEventListener('mousemove', onMove)
+                      canvas.removeEventListener('mouseup', onUp)
+                      const dataUrl = canvas.toDataURL()
+                      setForm((f) => ({ ...f, signature: dataUrl }))
+                    }
+                    canvas.addEventListener('mousemove', onMove)
+                    canvas.addEventListener('mouseup', onUp)
+                  }}
+                />
+                <button
+                  type="button"
+                  className="mb-btn mb-btn-secondary"
+                  onClick={() => {
+                    const canvas = document.querySelector('.mb-signature-canvas')
+                    if (canvas) {
+                      const ctx = canvas.getContext('2d')
+                      ctx.clearRect(0, 0, canvas.width, canvas.height)
+                      setForm((f) => ({ ...f, signature: '' }))
+                    }
+                  }}
+                >
+                  {s.form.clearSignature}
+                </button>
+              </div>
+              <Field label={s.form.signatureDate} required type="date" value={form.signatureDate} onChange={set('signatureDate')} error={err('signatureDate')} />
             </div>
           )}
 
           {step === 5 && (
+            <div className="mb-fields">
+              <Chips legend={s.form.education} required multi name="education" value={form.education} onChange={set('education')} error={err('education')}
+                options={[
+                  ['up_to_grade_9', s.form.educationOpts.up_to_grade_9],
+                  ['gce_ol', s.form.educationOpts.gce_ol],
+                  ['gce_al', s.form.educationOpts.gce_al],
+                  ['diploma', s.form.educationOpts.diploma],
+                  ['degree', s.form.educationOpts.degree],
+                  ['postgraduate', s.form.educationOpts.postgraduate],
+                ]} />
+              <Chips legend={s.form.employmentStatus} required multi name="employmentStatus" value={form.employmentStatus} onChange={set('employmentStatus')} error={err('employmentStatus')}
+                options={[
+                  ['government', s.form.employmentOpts.government],
+                  ['private', s.form.employmentOpts.private],
+                  ['self_employed', s.form.employmentOpts.self_employed],
+                  ['agriculture', s.form.employmentOpts.agriculture],
+                  ['fisheries', s.form.employmentOpts.fisheries],
+                  ['labour', s.form.employmentOpts.labour],
+                  ['student', s.form.employmentOpts.student],
+                  ['job_seeker', s.form.employmentOpts.job_seeker],
+                  ['homemaker', s.form.employmentOpts.homemaker],
+                  ['retired', s.form.employmentOpts.retired],
+                  ['abroad', s.form.employmentOpts.abroad],
+                  ['other', s.form.employmentOpts.other],
+                ]} />
+              {form.employmentStatus.includes('other') && (
+                <Field label={s.form.employmentOther} required value={form.employmentOther} onChange={set('employmentOther')} error={err('employmentOther')} maxLength={100} />
+              )}
+            </div>
+          )}
+
+          {step === 6 && (
+            <div className="mb-fields">
+              <Chips legend={s.form.interests} required multi name="interests" value={form.interests} onChange={set('interests')} error={err('interests')}
+                options={[
+                  ['education', s.form.interestOpts.education],
+                  ['healthcare', s.form.interestOpts.healthcare],
+                  ['agriculture', s.form.interestOpts.agriculture],
+                  ['fisheries', s.form.interestOpts.fisheries],
+                  ['water', s.form.interestOpts.water],
+                  ['environment', s.form.interestOpts.environment],
+                  ['technology', s.form.interestOpts.technology],
+                  ['law', s.form.interestOpts.law],
+                  ['business', s.form.interestOpts.business],
+                  ['arts_sports', s.form.interestOpts.arts_sports],
+                  ['social_service', s.form.interestOpts.social_service],
+                ]} />
+            </div>
+          )}
+
+          {step === 7 && (
             <div className="mb-fields">
               <div className="mb-review">
                 <h4>{s.form.review}</h4>
@@ -435,18 +577,17 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
                   ))}
                 </dl>
               </div>
-              <div className="mb-decls">
-                {DECLARATION_KEYS.map((k) => (
-                  <CheckRow key={k} checked={form.declarations[k]} onChange={setDecl(k)} error={err(`declarations.${k}`)}>
-                    {s.form.decl[k]}<span className="mb-req" aria-hidden="true"> *</span>
-                    {k === 'rules' && docLink('rules')}
-                    {k === 'constitution' && docLink('constitution')}
-                    {k === 'conduct' && docLink('conduct')}
-                  </CheckRow>
-                ))}
-              </div>
-              <Field label={s.form.signature} required value={form.signature} onChange={set('signature')} error={err('signature')}
-                hint={s.form.signatureHint} autoComplete="off" maxLength={160} className="mb-field-sign" />
+              <section className="mb-terms" aria-labelledby="mb-terms-title">
+                <h4 id="mb-terms-title">{s.form.termsTitle}</h4>
+                <div className="mb-terms-content">
+                  {s.form.terms.map((term, i) => (
+                    <p key={i}>{term}</p>
+                  ))}
+                </div>
+              </section>
+              <CheckRow checked={form.termsAccepted} onChange={set('termsAccepted')} error={err('termsAccepted')}>
+                {s.form.termsAccept}<span className="mb-req" aria-hidden="true"> *</span>
+              </CheckRow>
             </div>
           )}
         </div>
@@ -473,13 +614,6 @@ export default function ApplicationForm({ page, s, lang, onSubmitted, onTrack })
           </div>
         </div>
       </form>
-
-      <aside className="mb-privacy" aria-labelledby="mb-privacy-title">
-        <ShieldCheck size={26} aria-hidden="true" className="mb-privacy-icon" />
-        <h3 id="mb-privacy-title">{s.privacy.title}</h3>
-        <ul>{s.privacy.points.map((p) => <li key={p}>{p}</li>)}</ul>
-        <Link to="/privacy-policy" className="mb-inline-link">{s.privacy.policy}<ArrowRight size={14} aria-hidden="true" /></Link>
-      </aside>
 
       {saved && (
         <Modal title={s.saved.title} onClose={() => setSaved(null)}>

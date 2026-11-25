@@ -19,7 +19,7 @@ const DigitalTicket = forwardRef(function DigitalTicket({ ticket, variant = 'scr
     <article ref={ref} className={`tk tk--${status}${variant === 'print' ? ' tk--fixed' : ''}`} aria-label={`${T('tkOfficial')} ${ticket.ticketCode}`}>
       <div className="tk-main">
         <header className="tk-head">
-          <img className="tk-logo" src={brand.logo} alt="" crossOrigin="anonymous" />
+          <span className="party-logo-circle tk-logo"><img src={brand.logo} alt="" crossOrigin="anonymous" /></span>
           <div className="tk-brand">
             <span className="tk-party">{brand.name}</span>
             <span className="tk-kicker">{T('tkOfficial')}</span>

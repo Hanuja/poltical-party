@@ -1,27 +1,48 @@
-// Form state + client-side validation for the 5-step application. The server re-validates
-// everything (backend/api/members/index.php → mem_validate_application); these rules mirror it.
+// Form state + client-side validation for the 7-section trilingual application.
+// The server re-validates everything (backend/api/members/index.php → mem_validate_application);
+// these rules mirror it.
+import { EMPTY_PLEDGES, MEMBERSHIP_PLEDGES } from './membershipPledges'
 
 export const EMPTY_FORM = {
-  fullName: '', dateOfBirth: '', gender: '',
-  residentialAddress: '', mailingSame: true, mailingAddress: '',
-  provinceId: '', districtId: '', divisionId: '', phone: '', email: '',
-  nic: '', citizenship: '', eligible: false,
-  occupation: '', interests: [], previousMember: null, previousOrganisation: '',
-  declarations: { rules: false, constitution: false, conduct: false, privacy: false, declaration: false },
-  signature: '',
+  // Section 1: Personal Details
+  fullNameTa: '', fullNameEn: '', nic: '', dateOfBirth: '', gender: '', maritalStatus: '',
+  // Section 2: Address & Area Details
+  permanentAddress: '', currentAddress: '', gnDivision: '', gnNumber: '', dsDivision: '',
+  localAuthority: '', electoralConstituency: '', districtId: '', provinceId: '', divisionId: '',
+  phone: '', whatsapp: '', email: '',
+  // Section 3: Declarations
+  declarations: {
+    citizen: false, noOtherParty: false, govEmployee: false, trueInfo: false,
+  },
+  pledges: { ...EMPTY_PLEDGES },
+  // Section 4: Signature
+  signature: '', signatureDate: '',
+  // Section 5: Education & Occupation
+  education: [], employmentStatus: [], employmentOther: '',
+  // Section 6: Areas of Contribution
+  interests: [],
+  // Section 7: Terms & Conditions
+  termsAccepted: false,
+  // Photo
+  photo: null,
+  // Language
+  language: 'ta',
 }
 
 // Which step each field lives on (used to jump to the first server-side error).
 export const FIELD_STEP = {
-  fullName: 1, dateOfBirth: 1, gender: 1, photo: 1,
-  residentialAddress: 2, mailingAddress: 2, provinceId: 2, districtId: 2, divisionId: 2, phone: 2, email: 2,
-  nic: 3, citizenship: 3, eligible: 3,
-  occupation: 4, interests: 4, previousMember: 4, previousOrganisation: 4,
-  signature: 5,
+  fullNameTa: 1, fullNameEn: 1, nic: 1, dateOfBirth: 1, gender: 1, maritalStatus: 1,
+  permanentAddress: 2, currentAddress: 2, gnDivision: 2, gnNumber: 2, dsDivision: 2,
+  localAuthority: 2, electoralConstituency: 2, districtId: 2, provinceId: 2, divisionId: 2,
+  phone: 2, whatsapp: 2, email: 2,
+  'declarations.citizen': 3, 'declarations.noOtherParty': 3, 'declarations.govEmployee': 3, 'declarations.trueInfo': 3,
+  pledges: 3,
+  signature: 4, signatureDate: 4,
+  education: 5, employmentStatus: 5, employmentOther: 5,
+  interests: 6,
+  termsAccepted: 7,
 }
-export const stepOfField = (f) => FIELD_STEP[f] || (f.startsWith('declarations.') ? 5 : 1)
-
-export const DECLARATION_KEYS = ['rules', 'constitution', 'conduct', 'privacy', 'declaration']
+export const stepOfField = (f) => FIELD_STEP[f] || 1
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const NAME_RE = /^[\p{L}\p{M}\s.'-]+$/u
@@ -53,57 +74,72 @@ function nicYear(nic) {
 export function validateStep(step, f, { minAge = 18, requirePhoto = false, photo = null } = {}) {
   const e = {}
   if (step === 1) {
-    const name = f.fullName.trim()
-    if (name.length < 3) e.fullName = 'required'
-    else if (!NAME_RE.test(name)) e.fullName = 'nameInvalid'
+    const nameTa = f.fullNameTa.trim()
+    const nameEn = f.fullNameEn.trim()
+    if (nameTa.length < 3) e.fullNameTa = 'required'
+    else if (!NAME_RE.test(nameTa)) e.fullNameTa = 'nameInvalid'
+    if (nameEn.length < 3) e.fullNameEn = 'required'
+    else if (!NAME_RE.test(nameEn)) e.fullNameEn = 'nameInvalid'
+    else if (nameEn !== nameEn.toUpperCase()) e.fullNameEn = 'uppercase'
+    const nic = normNic(f.nic)
+    if (!nic) e.nic = 'required'
+    else if (!/^\d{9}[VX]$/.test(nic) && !/^\d{12}$/.test(nic)) e.nic = 'invalid'
     const age = ageFrom(f.dateOfBirth)
     if (!f.dateOfBirth) e.dateOfBirth = 'required'
     else if (age === null || age < 0 || age > 120) e.dateOfBirth = 'invalid'
     else if (age < minAge) e.dateOfBirth = 'too_young'
-    if (requirePhoto && !photo) e.photo = 'required'
+    else if (nicYear(nic) !== null && nicYear(nic) !== Number(f.dateOfBirth.slice(0, 4))) e.nic = 'dob_mismatch'
+    if (!['male', 'female', 'other'].includes(f.gender)) e.gender = 'required'
+    if (!['single', 'married', 'divorced', 'widowed'].includes(f.maritalStatus)) e.maritalStatus = 'required'
+    if (requirePhoto && !photo && !f.photo) e.photo = 'required'
   }
   if (step === 2) {
-    if (f.residentialAddress.trim().length < 5) e.residentialAddress = 'required'
-    if (!f.mailingSame && f.mailingAddress.trim().length < 5) e.mailingAddress = 'required'
-    if (!f.provinceId) e.provinceId = 'required'
+    if (f.permanentAddress.trim().length < 5) e.permanentAddress = 'required'
+    if (f.gnDivision.trim().length < 2) e.gnDivision = 'required'
+    if (f.dsDivision.trim().length < 2) e.dsDivision = 'required'
     if (!f.districtId) e.districtId = 'required'
+    if (!f.provinceId) e.provinceId = 'required'
     if (!f.divisionId) e.divisionId = 'required'
     if (!/^\+?\d{9,15}$/.test(normPhone(f.phone))) e.phone = f.phone ? 'phone' : 'required'
-    if (!EMAIL_RE.test(f.email.trim())) e.email = f.email ? 'email' : 'required'
+    if (f.email && !EMAIL_RE.test(f.email.trim())) e.email = 'email'
   }
   if (step === 3) {
-    const nic = normNic(f.nic)
-    const y = nicYear(nic)
-    if (!nic) e.nic = 'required'
-    else if (!y) e.nic = 'nic'
-    else if (/^\d{4}-/.test(f.dateOfBirth) && y !== Number(f.dateOfBirth.slice(0, 4))) e.nic = 'dob_mismatch'
-    if (!f.citizenship) e.citizenship = 'required'
-    if (!f.eligible) e.eligible = 'required'
+    const allPledgesAccepted = (values) => MEMBERSHIP_PLEDGES.every(({ key }) => values?.[key] === true)
+    if (!allPledgesAccepted(f.pledges)) e.pledges = 'pledges_incomplete'
+    if (!f.declarations.citizen) e['declarations.citizen'] = 'required'
+    if (!f.declarations.noOtherParty) e['declarations.noOtherParty'] = 'required'
+    if (!f.declarations.govEmployee) e['declarations.govEmployee'] = 'required'
+    if (!f.declarations.trueInfo) e['declarations.trueInfo'] = 'required'
   }
   if (step === 4) {
-    if (f.occupation.trim().length < 2) e.occupation = 'required'
-    if (f.previousMember === null) e.previousMember = 'required'
-    if (f.previousMember && f.previousOrganisation.trim().length < 2) e.previousOrganisation = 'required'
+    if (!f.signature || f.signature.length < 10) e.signature = 'required'
+    if (!f.signatureDate) e.signatureDate = 'required'
   }
   if (step === 5) {
-    DECLARATION_KEYS.forEach((k) => { if (!f.declarations[k]) e[`declarations.${k}`] = 'required' })
-    if (!f.signature.trim()) e.signature = 'required'
-    else if (normName(f.signature) !== normName(f.fullName)) e.signature = 'mismatch'
+    if (!f.education || f.education.length === 0) e.education = 'required'
+    if (!f.employmentStatus || f.employmentStatus.length === 0) e.employmentStatus = 'required'
+    if (f.employmentStatus.includes('other') && !f.employmentOther.trim()) e.employmentOther = 'required'
+  }
+  if (step === 6) {
+    if (!f.interests || f.interests.length === 0) e.interests = 'required'
+  }
+  if (step === 7) {
+    if (!f.termsAccepted) e.termsAccepted = 'required'
   }
   return e
 }
 
-/** Payload sent to ?action=apply. Mailing address dropped when "same" is ticked. */
+/** Payload sent to ?action=apply. */
 export function toPayload(f, language, draftCode) {
   return {
     ...f,
-    fullName: f.fullName.trim(),
+    fullNameTa: f.fullNameTa.trim(),
+    fullNameEn: f.fullNameEn.trim().toUpperCase(),
     nic: normNic(f.nic),
     phone: f.phone.trim(),
+    whatsapp: f.whatsapp ? normPhone(f.whatsapp) : '',
     email: f.email.trim(),
-    mailingAddress: f.mailingSame ? '' : f.mailingAddress,
-    previousMember: !!f.previousMember,
-    previousOrganisation: f.previousMember ? f.previousOrganisation : '',
+    currentAddress: f.currentAddress || '',
     provinceId: Number(f.provinceId) || 0,
     districtId: Number(f.districtId) || 0,
     divisionId: Number(f.divisionId) || 0,
@@ -114,12 +150,20 @@ export function toPayload(f, language, draftCode) {
 
 /** Restores a saved draft onto the empty form, ignoring unknown keys. */
 export function fromDraft(data) {
-  const out = { ...EMPTY_FORM, declarations: { ...EMPTY_FORM.declarations } }
+  const out = { ...EMPTY_FORM, declarations: { ...EMPTY_FORM.declarations }, pledges: { ...EMPTY_PLEDGES } }
   Object.keys(EMPTY_FORM).forEach((k) => {
     if (!(k in (data || {}))) return
-    if (k === 'declarations') DECLARATION_KEYS.forEach((d) => { out.declarations[d] = !!data.declarations?.[d] })
-    else if (k === 'interests') out.interests = Array.isArray(data.interests) ? data.interests.filter((x) => typeof x === 'string') : []
-    else out[k] = data[k]
+    if (k === 'declarations') {
+      Object.keys(EMPTY_FORM.declarations).forEach((d) => { out.declarations[d] = !!data.declarations?.[d] })
+    } else if (k === 'pledges') {
+      // Pledge acceptance must always be an explicit action in the current application.
+    } else if (k === 'education' || k === 'employmentStatus' || k === 'interests') {
+      out[k] = Array.isArray(data[k]) ? data[k].filter((x) => typeof x === 'string') : []
+    } else if (k === 'photo') {
+      // Photo is handled separately via file upload
+    } else {
+      out[k] = data[k]
+    }
   })
   return out
 }

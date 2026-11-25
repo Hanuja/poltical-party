@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import api from '../lib/api';
 import '../App.css';
 
-const STATUSES = ['published', 'scheduled', 'archived'];
+const STATUSES = ['draft', 'auto_draft', 'published', 'scheduled', 'archived'];
 
 // Tabs -> API filters. Categories resolved via slug -> id map fetched once.
 const TABS = [
@@ -13,7 +13,7 @@ const TABS = [
   { key: 'public-notices', label: 'Public Notices' },
   { key: 'breaking', label: 'Breaking Announcements', flag: 'breaking' },
   { key: 'scheduled', label: 'Scheduled', status: 'scheduled' },
-  { key: 'drafts', label: 'Auto Drafts', status: 'auto_draft' },
+  { key: 'drafts', label: 'Drafts', status: 'draft,auto_draft' },
   { key: 'archived', label: 'Archived', status: 'archived' },
 ];
 
@@ -111,7 +111,7 @@ export default function Announcements() {
   const statCards = [
     ['Total', stats.total || 0, 'total'],
     ['Published', stats.published || 0, 'published'],
-    ['Auto Drafts', stats.auto_draft || 0, 'drafts'],
+    ['Drafts', (stats.draft || 0) + (stats.auto_draft || 0), 'drafts'],
     ['Scheduled', stats.scheduled || 0, 'scheduled'],
     ['Archived', stats.archived || 0, 'archived'],
   ];

@@ -41,7 +41,7 @@ export default function RoadmapHero({ t }) {
 
       {/* Decorative maroon / gold shapes */}
       <svg className="fr-hero-arc tw:hidden tw:lg:block" style={{ right: '4%', top: '9%', width: 260, height: 260 }} viewBox="0 0 200 200" aria-hidden="true">
-        <motion.circle cx="100" cy="100" r="92" fill="none" stroke="#FFC928" strokeWidth="3" strokeDasharray="6 10"
+        <motion.circle cx="100" cy="100" r="92" fill="none" stroke="#FFD32A" strokeWidth="3" strokeDasharray="6 10"
           initial={{ pathLength: 0, rotate: -90 }} animate={{ pathLength: 1, rotate: 0 }} transition={{ duration: 2, ease }} />
       </svg>
       <motion.span aria-hidden="true" className="fr-hero-arc tw:block tw:rounded-full tw:bg-gold"

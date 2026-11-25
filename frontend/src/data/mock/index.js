@@ -3,6 +3,8 @@
 // NOTE: si/ta content fields intentionally fall back to English until translated
 // content is published through the admin panel (placeholder data only).
 
+import { PARTY_LOGO } from '../../config/branding'
+
 const T = (en, si = '', ta = '') => ({ en, si, ta })
 
 export const mockNews = [
@@ -276,16 +278,16 @@ export const mockPages = {
 
 export const mockHeroBanner = {
   id: 0, isActive: true, sortOrder: 0,
-  imageDesktop: '/images/placeholder-hero-banner.png',
-  imageMobile: '/images/placeholder-hero-banner.png',
-  logo: '/images/logo.svg',
+  imageDesktop: '/images/homepage-hero.jpg',
+  imageMobile: '/images/homepage-hero.jpg',
+  logo: PARTY_LOGO,
   cta1Url: '/membership', cta2Url: '/manifesto',
-  badge: T('A New Political Movement', 'නව දේශපාලන චලනයක්', 'புதிய அரசியல் இயக்கம்'),
-  heading: T('A Better Future Starts With Us.', 'වඩා හොඳ අනාගතයක් අප සමඟ ආරම්භ වේ.', 'சிறந்த எதிர்காலம் நம்முடன் தொடங்குகிறது.'),
-  headingHighlight: T('Better Future', 'වඩා හොඳ අනාගතයක්', 'சிறந்த எதிர்காலம்'),
+  badge: T('A New Political Movement', 'නව දේශපාලන චලනයක්', ''),
+  heading: T('A Better Future Starts With Us.', 'වඩා හොඳ අනාගතයක් අප සමඟ ආරම්භ වේ.', ''),
+  headingHighlight: T('Better Future', 'වඩා හොඳ අනාගතයක්', ''),
   description: T('Equality, justice and dignity for every citizen — this is the vision our party is built on.',
     'සමානතාව, සාධාරණත්වය සහ සියලු වැසියන්ට ගෞරවය — අපේ පක්ෂයේ දැක්ම විස්තර කෙරේ.',
-    'ஒவ்வொரு குடிமகனுக்கும் சமத்துவம், நீதி மற்றும் கண்ணியம் — இது எங்கள் கட்சி கட்டமைக்கப்பட்ட தத்துவம்.'),
+    ''),
   cta1Label: T('Join Our Movement', 'අපේ චලනයට එක්වෙන්න', 'எங்கள் இயக்கத்தில் சேருங்கள்'),
   cta2Label: T('Read Our Manifesto', 'අපේ ප්‍රකාශනය කියවන්න', 'எங்கள் அறிக்கை படிக்க'),
 }

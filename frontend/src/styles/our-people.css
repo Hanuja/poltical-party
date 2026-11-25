@@ -1,16 +1,16 @@
 /* =====================================================================
    Our People — Leadership & Executive Officers + Leader profile page
-   White background · black #171717 type · maroon #800020 accent · yellow #F2C230 details
+   White background · black #171717 type · maroon #B5121B accent · yellow #FFD32A details
    ===================================================================== */
 .op, .ld {
-  --op-maroon: #800020;
-  --op-maroon-dark: #5c0018;
-  --op-gold: #f2c230;
+  --op-maroon: #7A0C12;
+  --op-maroon-dark: #6E0A10;
+  --op-gold: #FFD32A;
   --op-ink: #171717;
-  --op-text: #2b2b2b;
-  --op-muted: #6b6b6b;
-  --op-line: #e8e8e8;
-  --op-soft: #f5f5f5;
+  --op-text: #2B2B2B;
+  --op-muted: #6B6B6B;
+  --op-line: #E8E8E8;
+  --op-soft: #F8F8F8;
   --op-serif: 'Playfair Display', 'Noto Sans Tamil', 'Noto Sans Sinhala', Georgia, serif;
   --op-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   background: #fff;
@@ -66,11 +66,11 @@
 .op-select { position: relative; display: inline-flex; align-items: center; }
 .op-select select {
   appearance: none; -webkit-appearance: none; cursor: pointer;
-  min-width: 190px; padding: 10px 38px 10px 14px; border: 1px solid #d9d9d9; border-radius: 4px; background: #fff;
+  min-width: 190px; padding: 10px 38px 10px 14px; border: 1px solid #D9D9D9; border-radius: 4px; background: #fff;
   font: 500 0.88rem/1.2 var(--font-body); color: var(--op-ink); transition: border-color 0.2s, box-shadow 0.2s;
 }
 .op-select select:hover { border-color: var(--op-ink); }
-.op-select select:focus { outline: none; border-color: var(--op-maroon); box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.12); }
+.op-select select:focus { outline: none; border-color: var(--op-maroon); box-shadow: 0 0 0 3px rgba(181, 18, 27, 0.12); }
 .op-select svg { position: absolute; right: 12px; pointer-events: none; color: var(--op-maroon); }
 .op-clear {
   display: inline-flex; align-items: center; gap: 6px; padding: 9px 4px; border: 0; background: none; cursor: pointer;
@@ -240,7 +240,7 @@
 .op-member-place { display: flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 0.76rem; color: var(--op-muted); }
 .op-member-place svg { color: var(--op-gold); }
 @media (hover: hover) {
-  .op-member-link:hover { border-color: rgba(128, 0, 32, 0.35); box-shadow: 0 10px 24px rgba(23, 23, 23, 0.06); }
+  .op-member-link:hover { border-color: rgba(181, 18, 27, 0.35); box-shadow: 0 10px 24px rgba(23, 23, 23, 0.06); }
   .op-member-link:hover::after { transform: scaleX(1); }
   .op-member-link:hover img { transform: scale(1.05); }
   .op-member-link:hover .op-name { color: var(--op-maroon); }
@@ -256,7 +256,7 @@
 .op-state--empty svg { color: var(--op-maroon); }
 .op-state--empty .op-more { margin-left: auto; }
 .op-skeleton { display: grid; gap: 36px; }
-.op-sk { display: block; border-radius: 3px; background: linear-gradient(90deg, #f1f1f1 25%, #f8f8f8 50%, #f1f1f1 75%); background-size: 200% 100%; animation: op-shimmer 1.3s infinite linear; }
+.op-sk { display: block; border-radius: 3px; background: linear-gradient(90deg, #F1F1F1 25%, #f8f8f8 50%, #F1F1F1 75%); background-size: 200% 100%; animation: op-shimmer 1.3s infinite linear; }
 .op-sk-photo { aspect-ratio: 4 / 5; }
 .op-sk-line { height: 14px; width: 100%; margin-bottom: 14px; }
 .op-sk-line.tall { height: 38px; }
@@ -553,7 +553,7 @@
   padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--op-line); background: #fff;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
-.op-warrior:hover { border-color: rgba(128, 0, 32, 0.3); box-shadow: 0 14px 34px rgba(23, 23, 23, 0.07); }
+.op-warrior:hover { border-color: rgba(181, 18, 27, 0.3); box-shadow: 0 14px 34px rgba(23, 23, 23, 0.07); }
 .op-warrior-media { display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--op-soft); }
 .op-warrior-media:hover img { transform: scale(1.05); }
 .op-warrior-body { min-width: 0; }
@@ -577,7 +577,7 @@
 .op-sk-line { display: block; height: 14px; margin-bottom: 12px; border-radius: 4px; }
 .op-sk-line.w40 { width: 40%; } .op-sk-line.w70 { width: 70%; } .op-sk-line.w90 { width: 90%; }
 .op-sk-line.tall { height: 90px; }
-.op-sk { background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%); background-size: 200% 100%; animation: op-shimmer 1.4s infinite; }
+.op-sk { background: linear-gradient(90deg, #F1F1F1 25%, #e4e4e4 50%, #F1F1F1 75%); background-size: 200% 100%; animation: op-shimmer 1.4s infinite; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {

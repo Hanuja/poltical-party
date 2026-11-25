@@ -7,11 +7,13 @@
 // Contact details and social URLs are intentionally empty: the site has no confirmed official values
 // yet (the old mock data only had placeholders). Fill them in and they appear automatically.
 
+import { PARTY_LOGO, PARTY_NAMES, PARTY_SHORT_NAME } from '../../config/branding'
+
 export const FOOTER = {
   identity: {
-    logo: '/images/logo.png',
-    shortName: 'RISE',
-    name: 'Ilankai Tamil Arasu Katchi',
+    logo: PARTY_LOGO,
+    shortName: PARTY_SHORT_NAME,
+    name: PARTY_NAMES.en,
     motto: 'Together for Our People. Building a Better Tomorrow.',
     vision: 'Committed to democratic values, equality, Tamil rights, social justice, and a prosperous future for our people.',
   },
@@ -27,7 +29,7 @@ export const FOOTER = {
   ],
 
   explore: {
-    title: 'Explore ITAK',
+    title: `Explore ${PARTY_SHORT_NAME}`,
     links: [
       { label: 'Home', i18n: 'nav.home', to: '/' },
       { label: 'Our Identity', i18n: 'nav.ourIdentity', to: '/our-identity' },
@@ -76,7 +78,7 @@ export const FOOTER = {
   },
 
   connect: {
-    title: 'Connect With RISE',
+    title: `Connect With ${PARTY_SHORT_NAME}`,
     address: '',      // Headquarters address (line breaks allowed)
     phone: '',
     email: '',
@@ -96,7 +98,7 @@ export const FOOTER = {
   },
 
   newsletter: {
-    title: 'Stay Connected With RISE',
+    title: `Stay Connected With ${PARTY_SHORT_NAME}`,
     text: 'Receive the latest announcements, events, and important updates.',
     placeholder: 'Your email address',
     button: 'Subscribe',
@@ -105,7 +107,7 @@ export const FOOTER = {
   },
 
   bottom: {
-    copyright: 'Copyright © {year} RISE. All Rights Reserved.',
+    copyright: `Copyright © {year} ${PARTY_NAMES.en}. All Rights Reserved.`,
     credit: 'Designed for the People. Built for the Future.',
     links: [
       { label: 'Privacy Policy', i18n: 'footer.privacy', to: '/privacy-policy' },

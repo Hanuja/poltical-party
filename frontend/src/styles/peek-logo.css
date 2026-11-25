@@ -23,12 +23,12 @@
 .peek-logo-img { position: relative; z-index: 1; }
 
 .pk-head { fill: #E9B98F; }
-.pk-hair { fill: #650D24; }
-.pk-body { fill: #650D24; }
-.pk-pin { fill: #FFD84D; stroke: #FFD84D; }
+.pk-hair { fill: #7A0C12; }
+.pk-body { fill: #7A0C12; }
+.pk-pin { fill: #FFD32A; stroke: #FFD32A; }
 .pk-white { fill: #fff; }
-.pk-pupil { fill: #2b2b2b; }
-.pk-smile { stroke: #8a5a3b; stroke-width: 1.8; }
+.pk-pupil { fill: #2B2B2B; }
+.pk-smile { stroke: #8A6D00; stroke-width: 1.8; }
 
 /* Whole-person peek cycle: hidden → rise → hold/look → duck → hidden */
 @keyframes pk-rise {

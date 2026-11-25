@@ -45,13 +45,13 @@ export default function SuccessScreen({ result, s, lang, message, onTrack }) {
         </div>
         <div><dt>{s.success.date}</dt><dd>{dateText}</dd></div>
         <div><dt>{s.success.status}</dt><dd><span className="mb-pill is-received">{s.success.pending}</span></dd></div>
-        <div><dt>{s.success.email}</dt><dd className="mb-break">{result.email}</dd></div>
+        {result.email && <div><dt>{s.success.email}</dt><dd className="mb-break">{result.email}</dd></div>}
       </dl>
 
-      <p className={`mb-success-mail ${sent ? 'is-sent' : 'is-unsent'}`}>
+      {result.emailStatus && <p className={`mb-success-mail ${sent ? 'is-sent' : 'is-unsent'}`}>
         {sent ? <MailCheck size={18} aria-hidden="true" /> : <MailWarning size={18} aria-hidden="true" />}
         {sent ? fill(s.success.emailSent, { email: result.email }) : s.success.emailNotSent}
-      </p>
+      </p>}
 
       <div className="mb-row-actions is-center">
         <button type="button" className="mb-btn mb-btn-primary" onClick={onTrack}><Search size={18} aria-hidden="true" />{s.success.track}</button>

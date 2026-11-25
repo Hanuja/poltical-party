@@ -2,8 +2,8 @@
 html, body, #root { height: 100%; }
 body {
   font-family: 'Poppins', 'Noto Sans Tamil', 'Noto Sans Sinhala', system-ui, sans-serif;
-  background: #FFF8F0;
-  color: #1F1F1F;
+  background: #F8F8F8;
+  color: #171717;
   -webkit-font-smoothing: antialiased;
 }
 [lang="ta"], .lang-ta { font-family: 'Noto Sans Tamil', 'Poppins', sans-serif; }

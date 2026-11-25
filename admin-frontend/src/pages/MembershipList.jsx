@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { Search, RefreshCw, CloudOff, Settings2, ChevronLeft, ChevronRight, UserPlus, Eye, X } from 'lucide-react';
-import { membershipApi, STATUS, fmtDateTime } from '../lib/membership';
+import { Search, RefreshCw, CloudOff, Settings2, ChevronLeft, ChevronRight, UserPlus, Eye, X, FileText, Globe, Users, Inbox, Clock, BadgeCheck, XCircle } from 'lucide-react';
+import { membershipApi, STATUS, fmtDateTime, formatCount } from '../lib/membership';
 import '../membership.css';
 
 const TABS = [['', 'All'], ['pending', 'Received'], ['under_review', 'Under review'], ['verified', 'Approved'], ['rejected', 'Declined']];
@@ -18,13 +18,14 @@ export default function MembershipList() {
   const [state, setState] = useState('loading');
   const [status, setStatus] = useState('');
   const [district, setDistrict] = useState('');
+  const [method, setMethod] = useState('');
   const [q, setQ] = useState('');
   const [debouncedQ, setDebouncedQ] = useState('');
   const [page, setPage] = useState(1);
   const [photos, setPhotos] = useState({});
 
   useEffect(() => { const t = setTimeout(() => setDebouncedQ(q.trim()), 300); return () => clearTimeout(t); }, [q]);
-  useEffect(() => { setPage(1); }, [status, district, debouncedQ]);
+  useEffect(() => { setPage(1); }, [status, district, method, debouncedQ]);
 
   const load = useCallback(async () => {
     setState('loading');
@@ -32,14 +33,22 @@ export default function MembershipList() {
       const params = { page, limit: 20 };
       if (status) params.status = status;
       if (district) params.district = district;
+      if (method) params.method = method;
       if (debouncedQ) params.q = debouncedQ;
       setData(await membershipApi.list(params));
       setState('ready');
     } catch (e) {
       setState(e.status === 403 ? 'forbidden' : 'error');
     }
-  }, [page, status, district, debouncedQ]);
+  }, [page, status, district, method, debouncedQ]);
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === 'visible') load(); };
+    window.addEventListener('focus', load);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', onVisible); };
+  }, [load]);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,8 +65,14 @@ export default function MembershipList() {
   }, [data.items]);
 
   const st = data.stats || {};
-  const cards = [['', t.total, st.total], ['pending', t.received, st.pending], ['under_review', t.underReview, st.under_review], ['verified', t.approved, st.verified], ['rejected', t.declined, st.rejected]];
-  const filtered = Boolean(status || district || debouncedQ);
+  const cards = [
+    ['', t.total, st.total, Users],
+    ['pending', t.received, st.pending, Inbox],
+    ['under_review', t.underReview, st.under_review, Clock],
+    ['verified', t.approved, st.verified, BadgeCheck],
+    ['rejected', t.declined, st.rejected, XCircle],
+  ];
+  const filtered = Boolean(status || district || method || debouncedQ);
 
   return (
     <div className="ms-page" lang={lang}>
@@ -70,9 +85,10 @@ export default function MembershipList() {
       </div>
 
       <div className="ms-stats">
-        {cards.map(([key, label, n]) => (
+        {cards.map(([key, label, n, Icon]) => (
           <button key={label} type="button" className={`ms-stat ${status === key ? 'active' : ''}`} onClick={() => setStatus(key)} aria-pressed={status === key}>
-            <span className="ms-stat-num">{state === 'loading' && !data.items.length ? '–' : (n || 0)}</span>
+            <span className="ms-stat-icon" aria-hidden="true"><Icon size={20} /></span>
+            <span className="ms-stat-num">{state === 'loading' && !data.items.length ? '–' : formatCount(n || 0)}</span>
             <span className="ms-stat-label">{label}</span>
           </button>
         ))}
@@ -89,6 +105,11 @@ export default function MembershipList() {
           <select className="ms-select" value={district} onChange={(e) => setDistrict(e.target.value)} aria-label="District">
             <option value="">{t.allDistricts}</option>
             {data.districts?.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+          <select className="ms-select" value={method} onChange={(e) => setMethod(e.target.value)} aria-label="Application Method">
+            <option value="">All Methods</option>
+            <option value="online">Online Form</option>
+            <option value="pdf">PDF Upload</option>
           </select>
           <label className="ms-search">
             <Search size={16} aria-hidden="true" />
@@ -108,17 +129,22 @@ export default function MembershipList() {
           <div className="ms-empty">
             <UserPlus size={30} />
             <p>{filtered ? t.noResults : t.noApplications}</p>
-            {filtered && <button type="button" className="ms-btn ms-btn-ghost" onClick={() => { setStatus(''); setDistrict(''); setQ(''); }}>{t.clear}</button>}
+            {filtered && <button type="button" className="ms-btn ms-btn-ghost" onClick={() => { setStatus(''); setDistrict(''); setMethod(''); setQ(''); }}>{t.clear}</button>}
           </div>
         ) : (
           <div className={`ms-table-wrap ${state === 'loading' ? 'is-loading' : ''}`}>
             <table className="ms-table">
-              <thead><tr><th>{t.applicant}</th><th>{t.reference}</th><th>{t.district}</th><th>{lang === 'ta' ? 'மாகாணம்' : lang === 'si' ? 'පළාත' : 'Province'}</th><th>{t.submitted}</th><th>{t.status}</th><th><span className="ms-sr">{t.actions}</span></th></tr></thead>
+              <thead><tr><th>{t.applicant}</th><th>{t.reference}</th><th>Method</th><th>{t.district}</th><th>{lang === 'ta' ? 'மாகாணம்' : lang === 'si' ? 'පළාත' : 'Province'}</th><th>{t.submitted}</th><th>{t.status}</th><th><span className="ms-sr">{t.actions}</span></th></tr></thead>
               <tbody>
                 {data.items.map((m) => (
                   <tr key={m.id}>
                     <td data-label={t.applicant}><div className="ms-member-cell">{photos[m.id] ? <img className="ms-member-photo" src={photos[m.id]} alt=""/> : <span className="ms-member-photo ms-member-initial">{(m.fullName || '?').trim().slice(0, 1).toUpperCase()}</span>}<div><Link to={`/membership/${m.id}`} className="ms-name">{m.fullName}</Link><span className="ms-muted">{m.email}</span></div></div></td>
                     <td data-label={t.reference}><code>{m.reference}</code>{m.membershipId && <span className="ms-muted">ID {m.membershipId}</span>}</td>
+                    <td data-label="Method">
+                      <span className={`ms-pill ${m.applicationMethod === 'pdf' ? 'ms-pill-review' : 'ms-pill-verified'}`}>
+                        {m.applicationMethod === 'pdf' ? <><FileText size={14} /> PDF</> : <><Globe size={14} /> Online</>}
+                      </span>
+                    </td>
                     <td data-label={t.district}>{m.district || '—'}</td>
                     <td data-label={lang === 'ta' ? 'மாகாணம்' : lang === 'si' ? 'පළාත' : 'Province'}>{m.province || '—'}</td>
                     <td data-label={t.submitted}>{fmtDateTime(m.submittedAt)}</td>

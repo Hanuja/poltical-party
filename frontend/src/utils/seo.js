@@ -1,4 +1,6 @@
 // SEO helpers: page titles, meta descriptions, Open Graph tags.
+import i18n from '../i18n'
+import { PARTY_NAMES } from '../config/branding'
 
 function setMeta(attr, key, content) {
   let el = document.head.querySelector(`meta[${attr}="${key}"]`)
@@ -21,8 +23,9 @@ function setCanonical(href) {
 }
 
 export function setPageSEO({ title, description, image, url } = {}) {
-  const siteName = 'Political Party'
-  const fullTitle = title ? `${title} | ${siteName}` : siteName
+  const lang = (i18n.language || 'en').split('-')[0]
+  const siteName = PARTY_NAMES[lang] || PARTY_NAMES.en
+  const fullTitle = title && title !== siteName ? `${title} | ${siteName}` : siteName
   document.title = fullTitle
   if (description) {
     setMeta('name', 'description', description)

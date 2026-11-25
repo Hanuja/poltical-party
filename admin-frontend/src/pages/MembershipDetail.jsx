@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
-  ArrowLeft, CheckCircle2, XCircle, Eye, Mail, RefreshCw, CloudOff, Clock, Search, AlertTriangle, X, BadgeCheck, Send,
+  ArrowLeft, CheckCircle2, XCircle, Eye, Mail, RefreshCw, CloudOff, Clock, Search, AlertTriangle, X, BadgeCheck, Send, FileText, Download,
 } from 'lucide-react';
 import {
   membershipApi, INTERESTS, GENDERS, CITIZENSHIP, TEMPLATE_LABELS, EMAIL_STATUS, fmtDateTime, fmtDate, STATUS,
 } from '../lib/membership';
 import { StatusPill } from './MembershipList';
 import '../membership.css';
+import { memText } from '../../../frontend/src/components/membership/membershipText';
 
 const DECL_LABELS = {
   rules: 'Agrees to follow the membership rules', constitution: 'Accepts the party constitution', conduct: 'Will follow the code of conduct',
@@ -49,16 +50,24 @@ export default function MembershipDetail() {
   const [error, setError] = useState('');
   const [flash, setFlash] = useState('');
   const [emailHtml, setEmailHtml] = useState(null);
+  const [pdfPreview, setPdfPreview] = useState(null);
 
   const load = useCallback(async () => {
     try {
-      setM(await membershipApi.detail(id));
+      const application = await membershipApi.detail(id);
+      if (!application || typeof application !== 'object') throw new Error('Application details were empty.');
+      setM(application);
       setState('ready');
     } catch (e) {
+      setM(null);
       setState(e.status === 404 ? 'missing' : e.status === 403 ? 'forbidden' : 'error');
     }
   }, [id]);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    setM(null);
+    setState('loading');
+    load();
+  }, [load]);
 
   useEffect(() => {
     if (!m?.hasPhoto) return undefined;
@@ -96,6 +105,20 @@ export default function MembershipDetail() {
     try { setEmailHtml(await membershipApi.viewEmail(emailId)); } catch (e) { setError(e.message); }
   };
 
+  const loadPdf = async (kind, index = 0, download = false) => {
+    setError('');
+    try {
+      const blob = kind === 'application' ? await membershipApi.pdfBlob(m.id) : await membershipApi.supportingPdfBlob(m.id, index);
+      const url = URL.createObjectURL(blob);
+      if (download) {
+        const link = document.createElement('a'); link.href = url; link.download = kind === 'application' ? `membership-${m.reference}.pdf` : `supporting-document-${index + 1}.pdf`;
+        document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } else {
+        setPdfPreview((current) => { if (current?.url) URL.revokeObjectURL(current.url); return { url, title: kind === 'application' ? 'Completed Membership Form' : `Supporting Document ${index + 1}` }; });
+      }
+    } catch (e) { setError(e.message || 'Could not load the PDF.'); }
+  };
+
   if (state === 'loading') return <div className="ms-page"><div className="ms-empty"><RefreshCw size={24} className="ms-spin" /><p>Loading application…</p></div></div>;
   if (state !== 'ready') {
     return (
@@ -112,6 +135,7 @@ export default function MembershipDetail() {
 
   const open = m.status === 'pending' || m.status === 'under_review';
   const decl = m.declarations || {};
+  const applicationText = memText(m.language || 'en');
 
   return (
     <div className="ms-page">
@@ -139,7 +163,7 @@ export default function MembershipDetail() {
 
       {flash && <div className="ms-notice ms-notice-ok" role="status"><span>{flash}</span><button type="button" onClick={() => setFlash('')} aria-label="Dismiss"><X size={15} /></button></div>}
       {error && !dialog && <div className="ms-notice ms-notice-err" role="alert"><AlertTriangle size={16} /><span>{error}</span><button type="button" onClick={() => setError('')} aria-label="Dismiss"><X size={15} /></button></div>}
-      {!m.mail?.configured && (
+      {!m.mail?.configured && m.email && (
         <div className="ms-notice ms-notice-warn"><Mail size={16} /><span>No mail server is configured (MAIL_HOST / MAIL_FROM in <code>backend/.env</code>), so emails are recorded below but <b>not delivered</b>. Tell the applicant the outcome another way, or configure SMTP and use “Send again”.</span></div>
       )}
       {m.status === 'rejected' && m.decisionReason && (
@@ -148,6 +172,18 @@ export default function MembershipDetail() {
 
       <div className="ms-detail-grid">
         <div className="ms-col">
+          {(m.hasPdf || m.supportingDocumentCount > 0) && <section className="ms-card">
+            <h2><FileText size={18} /> Membership documents</h2>
+            {m.hasPdf && <div className="ms-document-row"><div><b>Completed membership form</b><span className="ms-muted">PDF document</span></div><div className="ms-document-actions">
+              <button type="button" className="ms-btn ms-btn-ghost ms-btn-sm" onClick={() => loadPdf('application')}><Eye size={14} /> Preview</button>
+              <button type="button" className="ms-btn ms-btn-ghost ms-btn-sm" onClick={() => loadPdf('application', 0, true)}><Download size={14} /> Download</button>
+            </div></div>}
+            {Array.from({ length: m.supportingDocumentCount || 0 }, (_, index) => <div className="ms-document-row" key={index}><div><b>Supporting document {index + 1}</b><span className="ms-muted">PDF document</span></div><div className="ms-document-actions">
+              <button type="button" className="ms-btn ms-btn-ghost ms-btn-sm" onClick={() => loadPdf('supporting', index)}><Eye size={14} /> Preview</button>
+              <button type="button" className="ms-btn ms-btn-ghost ms-btn-sm" onClick={() => loadPdf('supporting', index, true)}><Download size={14} /> Download</button>
+            </div></div>)}
+            <p className="ms-muted">Use the PDF viewer’s print control to print a document.</p>
+          </section>}
           <section className="ms-card">
             <h2>Personal details</h2>
             <div className="ms-person">
@@ -192,6 +228,14 @@ export default function MembershipDetail() {
               ))}
             </ul>
             <p className="ms-muted">Signed as <b className="ms-sign">{m.signature}</b> on {fmtDateTime(m.declaredAt)}</p>
+          </section>
+          <section className="ms-card" lang={m.language || 'en'}>
+            <h2>{applicationText.privacy.sectionsTitle}</h2>
+            <ol>{applicationText.privacy.points.map(([heading, detail]) => <li key={heading}><b>{heading}:</b> {detail}</li>)}</ol>
+            <h3>{applicationText.privacy.confirmationTitle}</h3>
+            <p>{decl.privacyConfirmed ? '☑' : '☐'} {applicationText.privacy.privacyConfirmation}</p>
+            <h3>{applicationText.privacy.finalTitle}</h3>
+            <p>{decl.finalConfirmed ? '☑' : '☐'} {applicationText.privacy.finalConfirmation}</p>
           </section>
         </div>
 
@@ -240,7 +284,7 @@ export default function MembershipDetail() {
 
       {dialog === 'approve' && (
         <Dialog title="Approve this application?" onClose={() => !busy && setDialog(null)}>
-          <p>A membership ID will be generated for <b>{m.fullName}</b> and an approval email {m.mail?.configured ? 'sent' : 'recorded (no mail server configured, so it will not be delivered)'} to {m.email}. This can’t be undone from here.</p>
+          <p>A membership ID will be generated for <b>{m.fullName}</b>{m.email ? ` and an approval email ${m.mail?.configured ? 'sent' : 'recorded (no mail server configured, so it will not be delivered)'} to ${m.email}` : ''}. This can’t be undone from here.</p>
           {error && <p className="ms-err-text" role="alert">{error}</p>}
           <div className="ms-dialog-actions">
             <button type="button" className="ms-btn ms-btn-ghost" onClick={() => setDialog(null)} disabled={busy}>Cancel</button>
@@ -277,6 +321,10 @@ export default function MembershipDetail() {
           <iframe title="Email preview" className="ms-email-frame" sandbox="" srcDoc={emailHtml.html} />
         </Dialog>
       )}
+      {pdfPreview && <Dialog title={pdfPreview.title} onClose={() => { URL.revokeObjectURL(pdfPreview.url); setPdfPreview(null); }}>
+        <iframe title={pdfPreview.title} className="ms-pdf-frame" src={pdfPreview.url} />
+        <p className="ms-muted">Use the PDF viewer controls to print or save this document.</p>
+      </Dialog>}
     </div>
   );
 }

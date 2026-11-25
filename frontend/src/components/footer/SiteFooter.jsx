@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { ArrowRight, ArrowUpRight, MapPin, Phone, Mail, Clock, Map as MapIcon, MessageSquare } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
+import { PARTY_LOGO, getBranding } from '../../config/branding'
 import FooterNewsletter from './FooterNewsletter'
 import { FOOTER } from './footerContent'
 import { SOCIAL, SmartLink, KolamPattern, SunRays, uiStrings } from './footerParts'
@@ -53,6 +54,7 @@ function LinkList({ links, label, ui, className = '' }) {
 
 export default function SiteFooter() {
   const { t, language } = useLanguage()
+  const partyName = getBranding(language).name // official name in the current language
   const ui = uiStrings(language)
   const rootRef = useRef(null)
   useReveal(rootRef)
@@ -92,12 +94,12 @@ export default function SiteFooter() {
       <div className="rf-wrap">
         {/* 01–05: five columns */}
         <div className="rf-grid">
-          <Reveal as="section" aria-label={id.name} className="rf-col-identity">
-            <SmartLink to="/" className="rf-logo-plate tw:shrink-0" aria-label={id.name}>
-              <img src="/images/logo.png" alt="Ilankai Tamil Arasu Katchi" width="168" height="84" className="tw:h-[72px] tw:w-auto" loading="lazy" />
+          <Reveal as="section" aria-label={partyName} className="rf-col-identity">
+            <SmartLink to="/" className="rf-logo-plate party-logo-circle tw:shrink-0" aria-label={partyName}>
+              <img src={PARTY_LOGO} alt={partyName} loading="lazy" />
             </SmartLink>
             <div className="rf-identity-inner">
-              <p className="party-title">Ilankai Tamil Arasu Katchi</p>
+              <p className="party-title">{partyName}</p>
               <p className="party-subtitle">{id.motto}</p>
               <p className="party-description rf-muted tw:mt-3 tw:max-w-[52ch]">{id.vision}</p>
               {social.length > 0 && (

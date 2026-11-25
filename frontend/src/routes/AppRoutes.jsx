@@ -27,6 +27,7 @@ const FindTicket = lazy(() => import('../pages/FindTicket'))
 const PhotoGallery = lazy(() => import('../pages/PhotoGallery'))
 const VideoGallery = lazy(() => import('../pages/VideoGallery'))
 const Membership = lazy(() => import('../pages/Membership'))
+const MembershipCount = lazy(() => import('../pages/MembershipCount'))
 const SearchResults = lazy(() => import('../pages/SearchResults'))
 const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'))
 const TermsConditions = lazy(() => import('../pages/TermsConditions'))
@@ -111,6 +112,7 @@ export default function AppRoutes() {
           <Route path="gallery" element={<PhotoGallery />} />
           <Route path="videos" element={<VideoGallery />} />
           <Route path="membership" element={<Membership />} />
+          <Route path="membership-count" element={<MembershipCount />} />
           <Route path="roadmap" element={<Roadmap />} />
           <Route path="public-voice" element={<PublicVoice />} />
           <Route path="public-voice/:id" element={<PublicVoice />} />

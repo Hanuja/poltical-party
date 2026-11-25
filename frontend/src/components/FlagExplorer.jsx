@@ -1,6 +1,7 @@
 // Interactive flag / emblem explorer, shared by the Our Identity page and
 // the Principles & Ideology page. `s` is the `symbol` block of identityContent.
 import { useEffect, useRef, useState } from 'react'
+import { PARTY_LOGO } from '../config/branding'
 import '../styles/flag-explorer.css'
 
 /* ── 04 Flag & Symbol: interactive artwork explorer ────────
@@ -17,7 +18,7 @@ const ARTWORKS = {
   // TODO: once /public/images/party-flag.png is added, list its symbols here too.
   flag: { src: '/images/party-flag.png', colours: ['maroon', 'gold', 'cream'], symbols: [] },
   emblem: {
-    src: '/images/logo.png',
+    src: PARTY_LOGO,
     colours: ['maroon', 'gold', 'cream'],
     symbols: [
       { id: 'island', poly: [[0.492, 0.24], [0.515, 0.245], [0.545, 0.3], [0.565, 0.37], [0.575, 0.45], [0.578, 0.53], [0.57, 0.6], [0.548, 0.655], [0.52, 0.68], [0.49, 0.675], [0.47, 0.63], [0.465, 0.55], [0.467, 0.42], [0.473, 0.3]] },
@@ -157,7 +158,7 @@ function FlagExplorer({ s, stacked = false }) {
     ctx.globalCompositeOperation = 'source-over'
     const glow = document.createElement('canvas'); glow.width = cv.width; glow.height = cv.height
     const g = glow.getContext('2d')
-    g.shadowColor = 'rgba(128, 0, 32, 0.95)'; g.shadowBlur = 9 * dpr
+    g.shadowColor = 'rgba(181, 18, 27, 0.95)'; g.shadowBlur = 9 * dpr
     g.drawImage(mask, 0, 0, cv.width, cv.height)
     g.drawImage(mask, 0, 0, cv.width, cv.height)
     g.shadowBlur = 0

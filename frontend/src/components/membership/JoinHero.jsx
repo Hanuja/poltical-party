@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowDown, ArrowRight, Quote } from 'lucide-react'
 import { Eyebrow, scrollToId } from './memUi'
 import { fill } from './membershipText'
+import { PARTY_LOGO } from '../../config/branding'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -31,7 +32,7 @@ function HeroMedia({ hero, s, loading }) {
         {photo ? (
           <motion.img src={photo} alt={hero.leaderName ? fill(s.hero.photoAlt, { name: hero.leaderName }) : ''} {...img} />
         ) : (
-          <motion.img className="mb-hero-emblem" src="/images/logo.png" alt={s.hero.logoAlt} {...img} />
+          <span className="party-logo-circle mb-party-logo"><motion.img className="mb-hero-emblem" src={PARTY_LOGO} alt={s.hero.logoAlt} {...img} /></span>
         )}
         {!reduce && (
           <motion.span className="mb-hero-curtain" aria-hidden="true"

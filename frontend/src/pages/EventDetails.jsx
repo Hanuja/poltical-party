@@ -12,7 +12,7 @@ import { eventImage, onEventImageError } from '../utils/eventImage'
 import AnimatedRegisterButton from '../components/registration/AnimatedRegisterButton'
 import RegisterModal from '../components/registration/RegisterModal'
 import { useRegText, fmtTimeRange, fmtDateTime } from '../components/registration/regText'
-import { isRegistrationOpen, registrationNotice } from '../components/registration/registrationStatus'
+import { isRegistrationOpen, registrationNotice, registrationLabel } from '../components/registration/registrationStatus'
 import '../styles/registration.css'
 
 export default function EventDetails() {
@@ -59,6 +59,8 @@ export default function EventDetails() {
   // the API decides (published, open, date, capacity, event status); older/mock data falls back to dates
   const regStatus = event.registrationStatus || (isPast ? 'EVENT_PAST' : isFull ? 'FULL' : 'open')
   const notice = registrationNotice(regStatus, T)
+  const isScheduledLive = event.eventStatus === 'live'
+  const comingSoon = isScheduledLive && event.status === 'upcoming'
 
   return (
     <>
@@ -72,6 +74,13 @@ export default function EventDetails() {
             <div className="reg-float">
               <img key={eventImage(event)} src={eventImage(event)} alt={event.title} className="event-detail-img" onError={onEventImageError} />
             </div>
+            {comingSoon && <p className="reg-closed-note" role="status"><strong>{language === 'ta' ? 'விரைவில் நேரலை' : language === 'si' ? 'ළඟදීම සජීවීව' : 'Coming soon'}</strong></p>}
+            {event.isLiveBadge && <p className="badge badge-maroon" role="status">LIVE</p>}
+            {event.status === 'live' && event.isLiveEnabled && event.streamEmbedUrl && (
+              <div className="event-live-player" style={{position:'relative',paddingTop:'56.25%',marginTop:16}}>
+                <iframe title={`${event.title} live stream`} src={event.streamEmbedUrl} allow="autoplay; encrypted-media; picture-in-picture; web-share" allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin" style={{position:'absolute',inset:0,width:'100%',height:'100%',border:0,borderRadius:8}} />
+              </div>
+            )}
             <div className="prose mt-3" dangerouslySetInnerHTML={{ __html: event.description || '' }} />
           </div>
           <aside className="event-detail-side card" style={{ padding: 28, alignSelf: 'start' }}>
@@ -80,6 +89,9 @@ export default function EventDetails() {
               <li><Calendar size={17} /><div><strong>{t('common.date')}</strong><span>{formatDate(event.date, locale)}</span></div></li>
               {(event.startTime || event.endTime) && (
                 <li><Clock size={17} /><div><strong>{t('events.time')}</strong><span>{fmtTimeRange(event.startTime, event.endTime, language)}</span></div></li>
+              )}
+              {(event.contactPerson || event.contactPhone) && (
+                <li><Users size={17} /><div><strong>{T('contactLabel')}</strong><span>{event.contactPerson}{event.contactPerson && event.contactPhone ? ' · ' : ''}{event.contactPhone}</span></div></li>
               )}
               {(event.registrationWindow?.[0] || event.registrationWindow?.[1] || event.registrationOpensAt || event.registrationClosesAt) && (
                 <li><Calendar size={17} /><div><strong>Registration</strong><span>
@@ -91,13 +103,13 @@ export default function EventDetails() {
 
             {isRegistrationOpen(regStatus) ? (
               <button type="button" className="btn btn-primary reg-btn--block" onClick={() => setShowRegModal(true)} aria-haspopup="dialog">
-                {t('events.registerButton')}
+                {T('registerNow')}
               </button>
             ) : regStatus === 'NOT_YET_OPEN' ? (
-              <p className="reg-closed-note" role="status"><strong>{T('upcomingEvent')}</strong><br />{notice.text}</p>
+              <p className="reg-closed-note" role="status"><strong>{T('upcomingReg')}</strong><br />{notice.text}</p>
             ) : (
               <>
-                <button type="button" className="btn btn-outline reg-btn--block" disabled>{T('registrationClosed')}</button>
+                <button type="button" className="btn btn-outline reg-btn--block" disabled>{registrationLabel(regStatus, T, event.stage) || T('registrationClosed')}</button>
                 <p className="reg-closed-note" role="status">{notice.text}</p>
               </>
             )}

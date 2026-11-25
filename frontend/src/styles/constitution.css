@@ -1,10 +1,10 @@
 /* Constitution & Public Policies — constitutional archive */
 .cp-page {
-  --cp-maroon:#800020; --cp-dark:#5c0018; --cp-ivory:#F5F5F5; --cp-gold:#F2C230; --cp-ink:#171717;
+  --cp-maroon:#B5121B; --cp-dark:#8F0E16; --cp-ivory:#F8F8F8; --cp-gold:#FFD32A; --cp-ink:#171717;
   --cp-ease:cubic-bezier(.22,1,.36,1);
   background:#fff; color:var(--cp-ink);
 }
-.cp-page .container{max-width:1180px}
+.cp-page .container{max-width:none;margin-left:0;margin-right:auto}
 .cp-page h1,.cp-page h2,.cp-page h3{font-family:'Playfair Display',Georgia,serif}
 .cp-eyebrow{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--cp-gold);margin-bottom:16px}
 .cp-reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s var(--cp-ease);transition-delay:var(--d,0s)}
@@ -13,7 +13,7 @@
 .cp-hero{background:var(--cp-ivory);padding:100px 0 110px;position:relative;overflow:hidden}
 .cp-hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:60px;align-items:center}
 .cp-hero-title{font-size:clamp(2.6rem,5.4vw,4.4rem);font-weight:800;color:var(--cp-maroon);line-height:1.05;margin:0 0 22px}
-.cp-hero-sub{font-size:1.08rem;line-height:1.8;max-width:52ch;color:#4a4549}
+.cp-hero-sub{font-size:1.08rem;line-height:1.8;max-width:52ch;color:#4A4A4A}
 
 /* Site palette: eyebrow text in maroon with a yellow rule (yellow text is unreadable on white) */
 .cp-eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--cp-maroon)}

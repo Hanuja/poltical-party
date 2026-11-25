@@ -51,7 +51,7 @@ export default function GeoOrg() {
 
   return (
     <div className="go-page" ref={root}>
-      <PageBanner breadcrumbItems={[{ label: 'Rise', to: '/' }, { label: 'Our People', to: '/our-people' }, { label: 'Geographic Organisation Chart' }]} />
+      <PageBanner breadcrumbItems={[{ label: 'TMK', to: '/' }, { label: 'Our People', to: '/our-people' }, { label: 'Geographic Organisation Chart' }]} />
 
       {/* Hero */}
       <section className="go-hero">
@@ -67,9 +67,9 @@ export default function GeoOrg() {
           </div>
           <div className="go-map" data-reveal>
             <svg viewBox="0 0 300 380" aria-label="Sri Lanka map illustration">
-              <path d="M150 20 L220 60 L240 140 L210 220 L160 300 L120 340 L90 300 L60 220 L70 120 L110 50 Z" fill="#800020" opacity=".12" stroke="#800020" strokeWidth="2" />
+              <path d="M150 20 L220 60 L240 140 L210 220 L160 300 L120 340 L90 300 L60 220 L70 120 L110 50 Z" fill="#B5121B" opacity=".12" stroke="#B5121B" strokeWidth="2" />
               {PROVINCES.slice(0, 9).map((p, i) => (
-                <circle key={p.id} cx={90 + (i % 3) * 60} cy={80 + Math.floor(i / 3) * 90} r="10" fill="#800020" opacity=".7" />
+                <circle key={p.id} cx={90 + (i % 3) * 60} cy={80 + Math.floor(i / 3) * 90} r="10" fill="#B5121B" opacity=".7" />
               ))}
             </svg>
           </div>

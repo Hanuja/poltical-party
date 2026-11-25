@@ -156,7 +156,18 @@ CREATE TABLE IF NOT EXISTS admin_notifications (
   INDEX idx_an_unread (is_read, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 8. Join Us page settings (all start empty = hidden on the page until an admin fills them in;
+-- 9. Application method (online form vs PDF upload)
+ALTER TABLE party_members
+  ADD COLUMN IF NOT EXISTS application_method ENUM('online','pdf') NOT NULL DEFAULT 'online' AFTER application_ref,
+  ADD COLUMN IF NOT EXISTS application_language VARCHAR(10) NULL AFTER application_method,
+  ADD COLUMN IF NOT EXISTS pdf_path VARCHAR(255) NULL AFTER application_language,
+  ADD COLUMN IF NOT EXISTS photo_path VARCHAR(255) NULL AFTER pdf_path;
+
+ALTER TABLE party_members
+  ADD INDEX IF NOT EXISTS idx_pm_application_method (application_method),
+  ADD INDEX IF NOT EXISTS idx_pm_application_language (application_language);
+
+-- 10. Join Us page settings (all start empty = hidden on the page until an admin fills them in;
 --    party names default to the existing branding settings).
 INSERT IGNORE INTO settings (setting_key, setting_value, `group`) VALUES
   ('mem_leader_photo', '', 'membership'),
@@ -172,7 +183,7 @@ INSERT IGNORE INTO settings (setting_key, setting_value, `group`) VALUES
   ('mem_public_site_url', '', 'membership'),
   ('mem_require_photo', '0', 'membership'),
   ('mem_min_age', '18', 'membership'),
-  ('mem_id_prefix', 'ITAK', 'membership');
+  ('mem_id_prefix', 'TMK', 'membership');
 
 INSERT IGNORE INTO settings (setting_key, setting_value, `group`)
   SELECT 'mem_party_name_en', setting_value, 'membership' FROM settings WHERE setting_key = 'party_name_en';

@@ -6,7 +6,7 @@
 //   MAIL_USERNAME=...             (optional; AUTH LOGIN when set)
 //   MAIL_PASSWORD=...
 //   MAIL_FROM=membership@example.org
-//   MAIL_FROM_NAME="Ilankai Tamil Arasu Katchi"
+//   MAIL_FROM_NAME="Thayaga Makkal Kazhagam (TMK)"
 // Without MAIL_HOST + MAIL_FROM, mail_send() returns status 'not_configured' and sends nothing.
 require_once __DIR__ . '/../config/env.php';
 

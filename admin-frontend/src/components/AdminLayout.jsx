@@ -9,11 +9,13 @@ import NotificationBell from './NotificationBell';
 import InterfaceLanguageSelector from './InterfaceLanguageSelector';
 import { getInitialLang, saveLang } from '../i18n/translations';
 import { ADMIN_UI } from '../i18n/adminInterface';
+import { LanguageProvider } from '../i18n/LanguageContext';
 import '../App.css';
+import { PARTY_LOGO } from '../config/branding';
 
 const PUBLIC_URL = 'http://localhost:5178';
 
-// Single shared nav config — used by desktop sidebar, tablet sidebar and mobile drawer.
+// Single shared nav config ? used by desktop sidebar, tablet sidebar and mobile drawer.
 const MENU = [
   { to: '/dashboard', labelKey: 'dashboard', icon: LayoutDashboard, end: true },
   { to: '/announcements', labelKey: 'announcements', icon: Megaphone, end: true },
@@ -49,7 +51,7 @@ function NavItems({ collapsed, onNavigate, t }) {
 function Brand({ onClose }) {
   return (
     <div className="sidebar-brand">
-      <img src="/images/logo.png" alt="" />
+      <span className="party-logo-circle"><img src={PARTY_LOGO} alt="" /></span>
       <div className="brand-text">
         <strong>RISE</strong>
         <span>Governance Hub</span>
@@ -71,7 +73,7 @@ export default function AdminLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
-  // Tablet (768–1023px): start collapsed; desktop: expanded. Close drawer on route change.
+  // Tablet (768?1023px): start collapsed; desktop: expanded. Close drawer on route change.
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1023px) and (min-width: 768px)');
     const apply = () => setCollapsed(mq.matches);
@@ -97,12 +99,13 @@ export default function AdminLayout() {
   const closeDrawer = () => setDrawerOpen(false);
 
   return (
+    <LanguageProvider value={{ lang, setLang, t }}>
     <div className={`admin-shell ${collapsed ? 'is-collapsed' : ''}`}>
       {/* Desktop / tablet sidebar */}
       <aside className="admin-sidebar">
         <Brand />
         <button className="collapse-btn" onClick={() => setCollapsed((c) => !c)}
-          title={collapsed ? 'Expand menu' : 'Collapse menu'} aria-label="Toggle sidebar">
+          title={collapsed ? t.expandMenu : t.collapseMenu} aria-label={t.collapseMenu}>
           <ChevronsLeft size={16} className={collapsed ? 'flip' : ''} />
         </button>
         <nav className="sidebar-nav">
@@ -133,7 +136,7 @@ export default function AdminLayout() {
 
       <div className="admin-body">
         <header className="admin-topbar">
-          <button className="hamburger" onClick={() => setDrawerOpen(true)} aria-label="Open menu">
+          <button className="hamburger" onClick={() => setDrawerOpen(true)} aria-label={t.menu}>
             <Menu size={22} />
           </button>
           <div className="topbar-title">
@@ -175,5 +178,6 @@ export default function AdminLayout() {
         </nav>
       </div>
     </div>
+    </LanguageProvider>
   );
 }

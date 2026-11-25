@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { ChevronDown, ArrowRight, Mic, AudioLines } from 'lucide-react'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const NAV = [
   { to: '/', key: 'nav.rise', end: true },
   {
+    to: '/about',
+    end: true,
     key: 'nav.ourIdentity',
     mega: [
       { to: '/our-identity?section=story', img: '/images/our-story-formation.jpg', titleKey: 'nav.idStory', descKey: 'nav.idStoryDesc' },
@@ -95,15 +98,30 @@ function NavItem({ item, mobile, closeMobile }) {
 
   if (item.mega || item.groups) {
     return (
-      <div className={`nav-item has-mega${open ? ' open' : ''}`} ref={ref}>
-        <button
-          className={`nav-link nav-dropdown-btn${childActive ? ' active' : ''}`}
-          onClick={() => setOpen(o => !o)}
-          aria-expanded={open}
-          aria-haspopup="true"
-        >
-          {t(item.key)} <ChevronDown size={14} />
-        </button>
+      <div className={`nav-item has-mega${item.to ? ' has-primary-link' : ''}${open ? ' open' : ''}`} ref={ref}>
+        {item.to ? (
+          <>
+            <NavLink to={item.to} end={item.end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={closeMobile}>
+              {t(item.key)}
+            </NavLink>
+            <button
+              className="nav-link nav-dropdown-btn nav-mega-toggle"
+              onClick={() => setOpen(o => !o)}
+              aria-label={`${t(item.key)} menu`}
+              aria-expanded={open}
+              aria-haspopup="true"
+            ><ChevronDown size={14} /></button>
+          </>
+        ) : (
+          <button
+            className={`nav-link nav-dropdown-btn${childActive ? ' active' : ''}`}
+            onClick={() => setOpen(o => !o)}
+            aria-expanded={open}
+            aria-haspopup="true"
+          >
+            {t(item.key)} <ChevronDown size={14} />
+          </button>
+        )}
         {open && <MegaMenu item={item} closeMobile={closeMobile} />}
       </div>
     )
@@ -128,6 +146,7 @@ export default function Navbar({ mobile = false, closeMobile }) {
       {NAV.map(item => (
         <NavItem key={item.key} item={item} mobile={mobile} closeMobile={closeMobile} />
       ))}
+      <div className="nav-language-switcher"><LanguageSwitcher /></div>
     </nav>
   )
 }

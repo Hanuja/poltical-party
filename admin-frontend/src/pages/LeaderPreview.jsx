@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams, useOutletContext } from 'react-router-dom';
 import {
   ArrowLeft, Pencil, Send, MapPin, Mail, Phone, Globe, UserRound, LoaderCircle, CloudOff, Eye, X, Building2, CalendarDays,
 } from 'lucide-react';
@@ -14,9 +14,10 @@ const lines = (text) => String(text || '').split('\n').map((x) => x.replace(/^[\
 // Previewing never publishes anything.
 export default function LeaderPreview() {
   const { id } = useParams();
+  const { lang: ui = 'en' } = useOutletContext() || {};
   const [search, setSearch] = useSearchParams();
   const lang = FORM_LANGS.some((l) => l.code === search.get('lang')) ? search.get('lang') : 'en';
-  const s = formStrings[lang];
+  const s = formStrings[ui] || formStrings.en;
   const [leader, setLeader] = useState(null);
   const [meta, setMeta] = useState(null);
   const [state, setState] = useState('loading');
@@ -43,10 +44,10 @@ export default function LeaderPreview() {
     } finally { setBusy(false); }
   };
 
-  if (state === 'loading') return <div className="lm-page" lang={lang}><div className="lm-state"><LoaderCircle className="spin" size={28} /> {s.loading}</div></div>;
+  if (state === 'loading') return <div className="lm-page" lang={ui}><div className="lm-state"><LoaderCircle className="spin" size={28} /> {s.loading}</div></div>;
   if (state === 'error') {
     return (
-      <div className="lm-page" lang={lang}><div className="lm-state lm-state-error">
+      <div className="lm-page" lang={ui}><div className="lm-state lm-state-error">
         <CloudOff size={30} /><p>{s.loadError}</p>
         <Link className="lm-btn lm-btn-ghost" to="/leadership"><ArrowLeft size={16} /> {s.backToList}</Link>
       </div></div>
@@ -71,7 +72,7 @@ export default function LeaderPreview() {
   const achievements = lines(v('achievements'));
 
   return (
-    <div className="lm-page" lang={lang}>
+    <div className="lm-page" lang={ui}>
       <div className="lm-head">
         <div className="lm-head-main">
           <Link to="/leadership" className="lm-back"><ArrowLeft size={16} /> {s.backToList}</Link>

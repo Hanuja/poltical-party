@@ -36,7 +36,7 @@ export default function ConstitutionPolicies() {
 
   return (
     <div className="cp-page" ref={root}>
-      <PageBanner breadcrumbItems={[{ label:'Rise', to:'/' }, { label:'Our Identity', to:'/our-identity' }, { label:'Constitution & Public Policies' }]} />
+      <PageBanner breadcrumbItems={[{ label:'TMK', to:'/' }, { label:'Our Identity', to:'/our-identity' }, { label:'Constitution & Public Policies' }]} />
 
       {/* Intro — Constitutional Archive */}
       <section className="cp-hero">

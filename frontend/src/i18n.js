@@ -17,9 +17,12 @@ i18n
     fallbackLng: 'en',
     supportedLngs: ['en', 'ta', 'si'],
     interpolation: { escapeValue: false },
+    // English by default. The browser language is not used: the site changes language only when
+    // the visitor picks one in the navbar switcher, and that choice is remembered across pages/visits.
+    // (New storage key so earlier auto-detected Tamil/Sinhala values don't override the English default.)
     detection: {
-      order: ['localStorage', 'navigator'],
-      lookupLocalStorage: 'pp_lang',
+      order: ['localStorage'],
+      lookupLocalStorage: 'pp_site_lang',
       caches: ['localStorage'],
     },
     returnNull: false,

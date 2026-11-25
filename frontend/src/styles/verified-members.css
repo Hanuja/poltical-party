@@ -1,0 +1,43 @@
+.verified-members-button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 17px;
+  border: 1px solid #FFD32A;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #B5121B, #8F0E16);
+  box-shadow: 0 8px 22px rgba(92, 0, 24, .2);
+  color: #fff;
+  text-decoration: none;
+  transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+  animation: vm-reveal .48s cubic-bezier(.22, .61, .36, 1) both;
+}
+@keyframes vm-reveal { from { opacity: 0; transform: translateX(14px) scale(.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
+.verified-members-button:hover {
+  transform: translateY(-2px) scale(1.025);
+  background: linear-gradient(135deg, #B5121B, #7A0C12);
+  box-shadow: 0 12px 28px rgba(92, 0, 24, .28);
+  color: #fff;
+}
+.verified-members-button:focus-visible { outline: 3px solid #FFD32A; outline-offset: 3px; }
+.verified-members-button > svg { flex: 0 0 auto; color: #FFD32A; }
+.verified-members-copy { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; text-align: center; }
+.verified-members-number { font-size: 1.2rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
+.verified-members-label { color: #ffe58a; font-size: .59rem; font-weight: 800; letter-spacing: .105em; white-space: nowrap; }
+.verified-members-button.is-compact { min-height: 42px; gap: 7px; padding: 6px 11px; }
+.verified-members-button.is-compact .verified-members-number { font-size: 1rem; }
+.verified-members-button.is-compact .verified-members-label { font-size: .53rem; }
+.membership-count-page { display: grid; min-height: 58vh; justify-items: center; align-content: center; gap: 14px; padding: 70px 24px; text-align: center; }
+.membership-count-kicker { color: #B5121B; font-size: .72rem; font-weight: 800; letter-spacing: .16em; }
+.membership-count-page h1 { margin: 0; color: #B5121B; font-family: var(--font-display, 'Playfair Display', Georgia, serif); font-size: clamp(2.3rem, 5vw, 4rem); line-height: 1.05; }
+.membership-count-page p { margin: 0 0 10px; color: #5E5E5E; }
+.membership-count-page .verified-members-button { min-width: 260px; min-height: 74px; }
+.membership-count-page .verified-members-number { font-size: 1.75rem; }
+.mobile-menu-members-count { display: none; padding: 14px 20px 22px; }
+@media (prefers-reduced-motion: reduce) { .verified-members-button { animation: none; transition: none; } }
+@media (max-width: 760px) {
+  .header-brand-group > .verified-members-button { display: none; }
+  .mobile-menu-members-count { display: block; }
+}

@@ -2,6 +2,7 @@
 // Static copy: data/identityContent.js (en / ta / si).
 // Live content (leaders, policies, documents, statements): services/content.js.
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { PARTY_LOGO } from '../config/branding'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight, FileText, Eye, Target, Sprout, Handshake, MapPin, X, UserRound, Mail, Phone } from 'lucide-react'
 import PageBanner from '../components/PageBanner.jsx'
@@ -90,7 +91,7 @@ function StorySection({ c }) {
             <div className="oi-st-plate-inner">
               {photoOk
                 ? <img src="/images/our-story-formation.jpg" alt={s.archiveCaption} onError={() => setPhotoOk(false)} />
-                : <img className="oi-st-plate-emblem" src="/images/logo.png" alt={c.symbol.symbolTitle} />}
+                : <span className="party-logo-circle oi-party-logo"><img className="oi-st-plate-emblem" src={PARTY_LOGO} alt={c.symbol.symbolTitle} /></span>}
             </div>
             <figcaption>{s.archiveCaption}</figcaption>
           </figure>

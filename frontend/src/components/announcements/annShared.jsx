@@ -70,11 +70,12 @@ export function CardMeta({ a, t, language, showType = true }) {
   )
 }
 
-export function ReadMore({ t }) {
+export function ReadMore({ a, t }) {
+  if (!a || (!a.slug && !a.id)) return null
   return (
-    <span className="an-readmore" aria-hidden="true">
+    <Link to={annPath(a)} className="an-readmore">
       {t('announcements.readMore')} <ArrowRight size={17} />
-    </span>
+    </Link>
   )
 }
 
@@ -90,7 +91,7 @@ export function FeatureCard({ a, t, language, wide = false, eager = false }) {
           <Link to={annPath(a)} className="an-card-link"><span className="an-card-title">{a.title}</span></Link>
         </h3>
         {a.shortDescription && <p className="an-desc" lang={a.language}>{a.shortDescription}</p>}
-        <ReadMore t={t} />
+        <ReadMore a={a} t={t} />
       </div>
     </article>
   )
@@ -108,7 +109,7 @@ export function ImageCard({ a, t, language, headingLevel = 3 }) {
           <Link to={annPath(a)} className="an-card-link"><span className="an-card-title">{a.title}</span></Link>
         </H>
         {a.shortDescription && <p className="an-desc" lang={a.language}>{a.shortDescription}</p>}
-        <ReadMore t={t} />
+        <ReadMore a={a} t={t} />
       </div>
     </article>
   )
@@ -125,7 +126,7 @@ export function RowCard({ a, t, language }) {
           <Link to={annPath(a)} className="an-card-link"><span className="an-card-title">{a.title}</span></Link>
         </h3>
         {a.shortDescription && <p className="an-desc" lang={a.language}>{a.shortDescription}</p>}
-        <ReadMore t={t} />
+        <ReadMore a={a} t={t} />
       </div>
     </article>
   )
@@ -146,7 +147,7 @@ export function ListRow({ a, t, language }) {
         </h3>
         {a.shortDescription && <p className="an-desc" lang={a.language} style={{ WebkitLineClamp: 2 }}>{a.shortDescription}</p>}
       </div>
-      <ReadMore t={t} />
+      <ReadMore a={a} t={t} />
     </article>
   )
 }

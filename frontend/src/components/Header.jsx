@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { getBranding } from '../config/branding'
 import { Menu, X } from 'lucide-react'
-import LanguageSwitcher from './LanguageSwitcher'
 import Navbar from './Navbar'
-import PeekLogo from './PeekLogo'
+import VerifiedMembersButton from './VerifiedMembersButton'
 
 export default function Header() {
   const { t, language } = useLanguage()
@@ -33,18 +32,20 @@ export default function Header() {
       {/* Main header — first element on the page */}
       <div className="main-header">
         <div className="container main-header-inner">
-          <Link to="/" className="brand" aria-label={brand.name}>
-            <PeekLogo src={brand.logo} alt={`${brand.name} logo`} imgClassName="brand-logo" />
-            <span className="brand-text">
-              <span className="brand-name">{brand.name}</span>
-              <span className="brand-slogan">{brand.slogan}</span>
-            </span>
-          </Link>
+          <div className="header-brand-group">
+            <Link to="/" className="brand" aria-label="Thayaga Makkal Kazhagam (TMK)">
+              <span className="party-logo-circle brand-logo-circle"><img src={brand.logo} alt="Thayaga Makkal Kazhagam (TMK) logo" className="brand-logo" /></span>
+              <span className="brand-text">
+                <span className="brand-name" lang="en">Thayaga Makkal Kazhagam (TMK)</span>
+                <span className="brand-slogan" lang="en">One goal: liberation for our people.</span>
+              </span>
+            </Link>
+            <VerifiedMembersButton compact />
+          </div>
 
           <Navbar />
 
           <div className="header-actions">
-            <LanguageSwitcher />
             <button className="icon-btn hide-desktop" onClick={() => setMobileOpen(true)} aria-label="Open menu">
               <Menu size={24} />
             </button>
@@ -57,13 +58,17 @@ export default function Header() {
         <div className="mobile-menu-overlay" onClick={() => setMobileOpen(false)}>
           <aside className="mobile-menu slide-down" onClick={e => e.stopPropagation()} aria-label="Mobile menu">
             <div className="mobile-menu-head">
-              <PeekLogo src={brand.logo} alt="" imgClassName="" height={36} />
-              <span className="brand-name">{brand.name}</span>
+              <span className="party-logo-circle mobile-brand-logo"><img src={brand.logo} alt="" /></span>
+              <span className="brand-text">
+                <span className="brand-name" lang="en">Thayaga Makkal Kazhagam (TMK)</span>
+                <span className="brand-slogan" lang="en">One goal: liberation for our people.</span>
+              </span>
               <button className="icon-btn" onClick={() => setMobileOpen(false)} aria-label={t('common.close')}>
                 <X size={24} />
               </button>
             </div>
             <Navbar mobile closeMobile={() => setMobileOpen(false)} />
+            <div className="mobile-menu-members-count"><VerifiedMembersButton /></div>
           </aside>
         </div>
       )}

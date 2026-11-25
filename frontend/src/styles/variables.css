@@ -1,44 +1,44 @@
 :root {
   /* ------------------------------------------------------------------
      Brand palette — one site-wide identity
-     White #FFFFFF · soft grey #F5F5F5 · ink #171717 · maroon #800020 · yellow #F2C230
+     White #FFFFFF · soft grey #F8F8F8 · ink #171717 · red #B5121B · yellow #FFD32A
      (Same tokens as the Our People module, styles/our-people.css.)
      ------------------------------------------------------------------ */
-  --color-primary: #800020;        /* Maroon — primary accent */
-  --color-primary-dark: #5c0018;   /* Maroon hover / pressed */
-  --color-primary-light: #9e1b30;
-  --color-primary-tint: rgba(128, 0, 32, 0.06);
-  --color-accent: #F2C230;         /* Yellow — small details only */
-  --color-accent-dark: #d9a91a;
-  --color-cream: #f5f5f5;          /* legacy name → soft grey */
+  --color-primary: #B5121B;        /* Red — primary accent */
+  --color-primary-dark: #8F0E16;   /* Red hover / pressed */
+  --color-primary-light: #D6454F;
+  --color-primary-tint: rgba(181, 18, 27, 0.06);
+  --color-accent: #FFD32A;         /* Yellow — small details only */
+  --color-accent-dark: #E8B800;
+  --color-cream: #F8F8F8;          /* legacy name → soft grey */
   --color-white: #ffffff;
   --color-ink: #171717;
   --color-charcoal: #171717;       /* legacy name → ink */
-  --color-deep-red: #5c0018;       /* legacy name → dark maroon (no bright red) */
-  --color-soft: #f5f5f5;
-  --color-line: #e8e8e8;
+  --color-deep-red: #8F0E16;       /* legacy name → dark red */
+  --color-soft: #F8F8F8;
+  --color-line: #E8E8E8;
 
   /* Neutrals */
-  --color-gray-50: #fafafa;
-  --color-gray-100: #f5f5f5;
-  --color-gray-200: #e8e8e8;
-  --color-gray-300: #d9d9d9;
+  --color-gray-50: #F8F8F8;
+  --color-gray-100: #F8F8F8;
+  --color-gray-200: #E8E8E8;
+  --color-gray-300: #D9D9D9;
   --color-gray-400: #a3a3a3;
-  --color-gray-500: #6b6b6b;
+  --color-gray-500: #6B6B6B;
   --color-gray-600: #525252;
-  --color-gray-700: #3d3d3d;
+  --color-gray-700: #3D3D3D;
   --color-gray-800: #262626;
   --color-gray-900: #171717;
 
   /* Semantic */
   --color-text: #171717;
-  --color-text-body: #2b2b2b;
-  --color-text-muted: #6b6b6b;
+  --color-text-body: #2B2B2B;
+  --color-text-muted: #6B6B6B;
   --color-bg: #ffffff;
-  --color-bg-alt: #f5f5f5;
-  --color-border: #e8e8e8;
-  --color-success: #800020;        /* palette-only: confirmations use maroon */
-  --color-error: #800020;
+  --color-bg-alt: #F8F8F8;
+  --color-border: #E8E8E8;
+  --color-success: #2E7D32;
+  --color-error: #B5121B;
 
   /* Typography — elegant serif display, clean sans body.
      Tamil / Sinhala glyphs fall through to Noto Sans Tamil / Sinhala. */

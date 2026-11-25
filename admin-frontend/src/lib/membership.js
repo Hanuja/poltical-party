@@ -15,6 +15,8 @@ export const membershipApi = {
   list: (params) => get('list', params),
   detail: (id) => get('detail', { id }),
   photoBlob: (id) => api.get('/members/', { params: { action: 'photo', id }, responseType: 'blob' }).then((r) => r.data),
+  pdfBlob: (id) => api.get('/members/', { params: { action: 'pdf', id }, responseType: 'blob' }).then((r) => r.data),
+  supportingPdfBlob: (id, file) => api.get('/members/', { params: { action: 'supporting-pdf', id, file }, responseType: 'blob' }).then((r) => r.data),
   decide: (id, decision, reason = '') => post('decide', { id, decision, reason }),
   resendEmail: (id, template) => post('resend-email', { id, template }),
   settings: () => get('settings'),
@@ -56,6 +58,21 @@ export const TEMPLATE_LABELS = { received: 'Application received', approved: 'Me
 export const EMAIL_STATUS = {
   sent: 'Sent', queued: 'Sending', failed: 'Failed', not_configured: 'Not sent — no mail server configured',
 };
+
+export function formatCount(n) {
+  const v = Math.max(0, Number(n) || 0);
+  if (v < 1000) return String(Math.round(v));
+  const units = [[1e9, 'B'], [1e6, 'M'], [1e3, 'K']];
+  for (let i = 0; i < units.length; i++) {
+    const [size, suffix] = units[i];
+    if (v < size) continue;
+    let val = v / size, s = suffix;
+    while (val >= 999.5 && i > 0) { i--; val = v / units[i][0]; s = units[i][1]; }
+    const rounded = val >= 100 ? Math.round(val) : Math.round(val * 10) / 10;
+    return `${rounded}${s}`;
+  }
+  return String(Math.round(v));
+}
 
 export function fmtDateTime(v) {
   if (!v) return '—';

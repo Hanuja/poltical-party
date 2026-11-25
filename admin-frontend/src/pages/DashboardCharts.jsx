@@ -1,16 +1,16 @@
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-const MAROON = '#650D24';
-const MAROON_2 = '#821B35';
-const GOLD = '#FFD84D';
+const MAROON = '#7A0C12';
+const MAROON_2 = '#B5121B';
+const GOLD = '#FFD32A';
 const GOLD_DEEP = '#E8B93B';
-const INK = '#282328';
-const MUTED = '#777078';
+const INK = '#282828';
+const MUTED = '#777777';
 const GRID = '#F1E9EC';
-const PIE_COLORS = [MAROON, GOLD_DEEP, MAROON_2, '#C9A24B', '#E8D9A0', '#4D091B'];
+const PIE_COLORS = [MAROON, GOLD_DEEP, MAROON_2, '#C9A24B', '#E8D9A0', '#6E0A10'];
 
 const axisTick = { fill: MUTED, fontSize: 11 };
-const tooltipStyle = { border: '1px solid #EEE7E9', borderRadius: 10, fontSize: 12, boxShadow: '0 8px 24px rgba(55,15,28,0.10)' };
+const tooltipStyle = { border: '1px solid #F1F1F1', borderRadius: 10, fontSize: 12, boxShadow: '0 8px 24px rgba(60, 10, 18,0.10)' };
 
 function Panel({ kicker, title, children, extra }) {
   return <section className="dh-panel">

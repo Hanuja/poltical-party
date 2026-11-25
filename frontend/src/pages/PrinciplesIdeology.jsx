@@ -84,7 +84,7 @@ export default function PrinciplesIdeology() {
 
   return (
     <div className="pi2" ref={root}>
-      <PageBanner breadcrumbItems={[{label:'Rise',to:'/'},{label:'Our Identity',to:'/our-identity'},{label:c.title}]} />
+      <PageBanner breadcrumbItems={[{label:'TMK',to:'/'},{label:'Our Identity',to:'/our-identity'},{label:c.title}]} />
 
       {/* S1 Heading + team photo */}
       <section className="pi2-s1">

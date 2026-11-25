@@ -42,7 +42,7 @@
     "to": "දක්වා"
   },
   "nav": {
-    "home": "මුල් පිටුව",
+    "home": "TMK",
     "about": "අප ගැන",
     "leadership": "නායකත්වය",
     "policies": "ප්‍රතිපත්ති සහ ප්‍රකාශය",
@@ -68,7 +68,7 @@
     "megaEventsDesc": "partika samagaama aramba",
     "megaGalleryDesc": "partika shramayen photos",
     "megaVideosDesc": "sambhashana ar saajithikama",
-    "rise": "Rise",
+    "rise": "RISE",
     "ourIdentity": "Our Identity",
     "ourPeople": "Our People",
     "moreOptions": "More",
@@ -138,6 +138,8 @@
   },
   "heroBanner": {
     "ariaLabel": "ප්‍රධාන ප්‍රචාරක banner එක",
+    "sloganLead": "එකම අරමුණයි:",
+    "sloganEnd": "ජාතියේ නිදහස.",
     "badge": "නව දේශපාලන චලනයක්",
     "heading": "වඩා හොඳ අනාගතයක් අප සමඟ ආරම්භ වේ.",
     "headingHighlight": "වඩා හොඳ අනාගතයක්",

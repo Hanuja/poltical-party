@@ -1,10 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { setPageSEO } from '../utils/seo'
-import PageBanner from '../components/PageBanner.jsx'
 import Breadcrumb from '../components/Breadcrumb'
-import { pickLang, mockPages } from '../data/mock'
 import { Flag, Users, Landmark, Rocket, ArrowRight } from 'lucide-react'
 
 const MILESTONES = [
@@ -15,41 +13,82 @@ const MILESTONES = [
   { year: '2026', icon: Flag, title: 'New Chapter', text: 'Renewed campaign for unity, justice and prosperity.' },
 ]
 
+export function JourneyHistorySection({ showIntroduction = true, showAboutButton = true, headingLevel = 'h1', breadcrumbItems, breadcrumbHomeLabel }) {
+  const { t } = useLanguage()
+  const sectionRef = useRef(null)
+  const Heading = headingLevel
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return undefined
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      section.classList.add('is-in')
+      return undefined
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        section.classList.add('is-in')
+        observer.disconnect()
+      }
+    }, { threshold: 0.12 })
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <>
+      <Breadcrumb
+        homeLabel={breadcrumbHomeLabel}
+        items={breadcrumbItems || [{ label: t('nav.ourIdentity'), to: '/about' }, { label: t('nav.partyHistory') }]}
+      />
+      <section className="section history-section" ref={sectionRef}>
+        <div className="container history-container">
+          <header className="history-heading">
+            <span className="history-eyebrow"><i aria-hidden="true" />{t('about.historyEyebrow')}</span>
+            <Heading>{t('about.historyTitle')}</Heading>
+            {showIntroduction && <p className="history-intro">Founded in the early years of Sri Lanka&apos;s modern democracy, our party has grown from a small group of idealists into a nationwide movement.</p>}
+          </header>
+
+          <div className="history-milestones-heading">
+            <h2>{t('about.timelineTitle')}</h2>
+            <span aria-hidden="true" />
+          </div>
+          <ol className="history-timeline">
+            {MILESTONES.map((m, i) => (
+              <li className="history-milestone" key={m.year} style={{ '--milestone-delay': `${i * 110}ms` }}>
+                <span className="history-marker" aria-hidden="true"><m.icon size={16} strokeWidth={1.8} /></span>
+                <article className="history-card">
+                  <span className="history-year">{m.year}</span>
+                  <h3>{m.title}</h3>
+                  <p>{m.text}</p>
+                </article>
+              </li>
+            ))}
+          </ol>
+
+          {showAboutButton && <div className="history-about-link">
+            <Link to="/about" className="btn history-about-button">{t('nav.ourIdentity')} <ArrowRight size={16} /></Link>
+          </div>}
+        </div>
+      </section>
+    </>
+  )
+}
+
 export default function History() {
   const { t, language } = useLanguage()
 
   useEffect(() => {
-    setPageSEO({ title: `${t('about.historyTitle')} | ${t('nav.about')}`, description: t('about.historyText') })
+    setPageSEO({ title: `${t('about.historyTitle')} | ${t('nav.ourIdentity')}`, description: t('about.historyText') })
   }, [t, language])
 
   return (
     <>
-      <Breadcrumb items={[{ label: t('nav.about'), to: '/about' }, { label: t('nav.partyHistory') }]} />
-      <section className="section">
-        <div className="container" style={{ maxWidth: 860 }}>
-          <span className="eyebrow">{t('about.historyEyebrow')}</span>
-          <h2>{t('about.historyTitle')}</h2>
-          <p style={{ fontSize: '1.08rem' }}>{pickLang(mockPages.history.content, language)}</p>
-
-          <h3 className="mt-4">{t('about.timelineTitle')}</h3>
-          <div className="timeline">
-            {MILESTONES.map((m, i) => (
-              <div className="timeline-item" key={i}>
-                <div className="timeline-dot"><m.icon size={16} /></div>
-                <div className="timeline-content">
-                  <span className="timeline-year">{m.year}</span>
-                  <h4>{m.title}</h4>
-                  <p>{m.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4">
-            <Link to="/about" className="btn btn-outline"><ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> {t('nav.about')}</Link>
-          </div>
-        </div>
-      </section>
+      <JourneyHistorySection
+        breadcrumbHomeLabel="Home"
+        breadcrumbItems={[{ label: 'Our Identity', to: '/about' }, { label: 'Party History' }]}
+      />
     </>
   )
 }

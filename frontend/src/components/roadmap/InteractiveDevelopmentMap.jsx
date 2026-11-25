@@ -80,7 +80,7 @@ export default function InteractiveDevelopmentMap({ t, lang, categoryKey, onCate
   // Province styling reads the latest selection through a ref, so Leaflet's resetStyle stays correct.
   const provinceStyle = (key, selected) => {
     const sel = key === selected
-    return { color: '#800020', weight: sel ? 2.5 : 1.2, opacity: selected && !sel ? 0.35 : 0.85, fillColor: sel ? '#FFC928' : '#800020', fillOpacity: sel ? 0.12 : selected ? 0.02 : 0.07 }
+    return { color: '#B5121B', weight: sel ? 2.5 : 1.2, opacity: selected && !sel ? 0.35 : 0.85, fillColor: sel ? '#FFD32A' : '#B5121B', fillOpacity: sel ? 0.12 : selected ? 0.02 : 0.07 }
   }
   const selRef = useRef(null)
   const provStyle = useCallback((f) => provinceStyle(f.properties.key, selRef.current), [])
@@ -108,7 +108,7 @@ export default function InteractiveDevelopmentMap({ t, lang, categoryKey, onCate
   }, [])
   const districtStyle = useCallback((f) => {
     const sel = f.properties.key === dist
-    return { color: '#590018', weight: sel ? 2.5 : 1, dashArray: sel ? null : '4 4', fillColor: sel ? '#800020' : '#FFC928', fillOpacity: sel ? 0.16 : 0.06 }
+    return { color: '#8F0E16', weight: sel ? 2.5 : 1, dashArray: sel ? null : '4 4', fillColor: sel ? '#B5121B' : '#FFD32A', fillOpacity: sel ? 0.16 : 0.06 }
   }, [dist])
 
   const areaName = dist ? pickText(DISTRICT_NAMES[dist], lang) : prov ? pickText(PROVINCE_NAMES[prov], lang) : 'Sri Lanka'

@@ -12,23 +12,23 @@
 @source "../components/footer";
 
 @theme {
-  --color-rf-maroon: #800020;
-  --color-rf-deep: #5c0018;
+  --color-rf-maroon: #B5121B;
+  --color-rf-deep: #8F0E16;
   --color-rf-dark: #3a0010;
-  --color-rf-gold: #FDB913;
+  --color-rf-gold: #FFD32A;
   --color-rf-gold-soft: #FFE08A;
   --color-rf-ink: #171717;
   --color-rf-mute: #666666;
-  --color-rf-light: #F7F7F7;
+  --color-rf-light: #F8F8F8;
 }
 
 .rf-root {
-  --rf-maroon: #800020;
-  --rf-deep: #5c0018;
+  --rf-maroon: #B5121B;
+  --rf-deep: #8F0E16;
   --rf-dark: #3a0010;
-  --rf-gold: #FDB913;
+  --rf-gold: #FFD32A;
   --rf-gold-soft: #FFE08A;
-  --rf-text: #E5E5E5;
+  --rf-text: #E8E8E8;
   --rf-text-dim: rgba(229, 229, 229, 0.72);
   --rf-line: rgba(253, 185, 19, 0.22);
   --rf-ease: cubic-bezier(.22, .61, .36, 1);
@@ -135,10 +135,15 @@ li:last-child > .rf-idlink { border-bottom: 0; }
 .rf-logo-plate {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 10px 16px; border-radius: 16px;
-  background: linear-gradient(160deg, #fffaf0, #fff3d6);
+  background: linear-gradient(160deg, #FFF8E1, #fff3d6);
   border: 1px solid rgba(253, 185, 19, 0.55);
   box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.55), 0 0 0 4px rgba(253, 185, 19, 0.08);
 }
+.rf-logo-plate.party-logo-circle {
+  width: 58px; height: 58px; min-width: 58px; padding: 0; border-radius: 50%;
+  background: transparent; border: 0; overflow: hidden; box-shadow: none;
+}
+.rf-logo-plate.party-logo-circle > img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 
 /* ---------- Glass cards (CTA + newsletter) ---------- */
 .rf-glass {
@@ -236,7 +241,7 @@ a.rf-contact-value:hover, a.rf-contact-value:focus-visible { color: var(--rf-gol
    tw: sheets later, and a later `tw:lg:grid-cols-3` or `tw:text-2xl` would beat an earlier
    `tw:xl:` override of the same property. Scoped .rf-root selectors avoid that.
    ========================================================================== */
-.rf-root .rf-wrap { position: relative; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+.rf-root .rf-wrap { position: relative; width: 100%; max-width: none; margin-left: 0; margin-right: auto; padding: 0 clamp(16px, 3vw, 56px); }
 .rf-root .rf-band { display: grid; gap: 20px; padding-bottom: 48px; }
 .rf-root .rf-muted { color: var(--rf-text); }
 .rf-root .rf-card-pad { padding: 24px; }
@@ -293,7 +298,7 @@ a.rf-contact-value:hover, a.rf-contact-value:focus-visible { color: var(--rf-gol
 }
 /* Party identity hierarchy */
 .party-title{font-family:var(--rf-display);font-size:3.25rem;font-weight:700;line-height:1.1;color:#fff;margin:0;letter-spacing:.01em}
-.party-subtitle{font-family:var(--rf-display);font-size:1.75rem;font-weight:500;line-height:1.4;color:var(--rf-gold-soft,#F4C430);font-style:italic;margin:10px 0 0}
+.party-subtitle{font-family:var(--rf-display);font-size:1.75rem;font-weight:500;line-height:1.4;color:var(--rf-gold-soft,#FFD32A);font-style:italic;margin:10px 0 0}
 .party-description{font-size:1.125rem;line-height:1.8;margin:14px 0 0 !important}
 @media(max-width:768px){
  .party-title{font-size:2.25rem}

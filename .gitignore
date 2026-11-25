@@ -21,6 +21,12 @@ coverage/
 # User uploads and runtime data
 backend/uploads/*
 !backend/uploads/.gitkeep
+!backend/uploads/membership/
+backend/uploads/membership/*
+!backend/uploads/membership/pdf/
+backend/uploads/membership/pdf/*
+!backend/uploads/membership/pdf/.htaccess
+!backend/uploads/membership/pdf/.gitkeep
 *.log
 npm-debug.log*
 *.tmp

@@ -1,9 +1,9 @@
 /* Presidents of Sri Lanka — continuous left → right carousel (components/PresidentsCarousel.jsx)
    Theme: maroon / yellow / black / white. One row only — the track never wraps. */
 .pc {
-  --pc-maroon: var(--color-primary, #800020);
-  --pc-maroon-d: var(--color-primary-dark, #5c0018);
-  --pc-yellow: var(--color-accent, #F2C230);
+  --pc-maroon: var(--color-primary, #B5121B);
+  --pc-maroon-d: var(--color-primary-dark, #8F0E16);
+  --pc-yellow: var(--color-accent, #FFD32A);
   --pc-ink: #171717;
   --pc-w: clamp(196px, 16vw, 250px);            /* every card the same size */
   --pc-gap: clamp(16px, 1.7vw, 26px);
@@ -15,8 +15,8 @@
 }
 
 /* section heading (moved here from leader-archive.css, which this page no longer loads) */
-.pi2 .pi2-s3 .pi2-eyebrow { display: inline-block; padding: 6px 16px; border-radius: 999px; background: #FFFFFF; border: 2px solid #FFFFFF; color: var(--color-primary, #800020); font-weight: 800; box-shadow: 0 6px 18px rgba(128, 0, 32, 0.14); }
-.pi2-s3 .pi2-head h2 { color: var(--color-primary, #800020); }
+.pi2 .pi2-s3 .pi2-eyebrow { display: inline-block; padding: 6px 16px; border-radius: 999px; background: #FFFFFF; border: 2px solid #FFFFFF; color: var(--color-primary, #B5121B); font-weight: 800; box-shadow: 0 6px 18px rgba(181, 18, 27, 0.14); }
+.pi2-s3 .pi2-head h2 { color: var(--color-primary, #B5121B); }
 .pi2-s3 { overflow-x: hidden; overflow-x: clip; } /* never a horizontal page scrollbar */
 
 /* ── strip ───────────────────────────────────────────── */
@@ -48,7 +48,7 @@
   transition: transform 0.5s var(--pc-ease), box-shadow 0.5s ease, border-color 0.3s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.pc-card:hover { transform: translateY(-8px); box-shadow: 0 24px 44px rgba(128, 0, 32, 0.2); border-color: rgba(128, 0, 32, 0.28); border-top-color: var(--pc-yellow); }
+.pc-card:hover { transform: translateY(-8px); box-shadow: 0 24px 44px rgba(181, 18, 27, 0.2); border-color: rgba(181, 18, 27, 0.28); border-top-color: var(--pc-yellow); }
 .pc-card:focus-visible { outline: 3px solid var(--pc-yellow); outline-offset: 4px; transform: translateY(-6px); }
 
 .pc-photo { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: #F5F2EE; }
@@ -71,7 +71,7 @@
 }
 .pc-num small { font-size: 0.66rem; font-weight: 700; opacity: 0.8; }
 
-.pc-body { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 14px 14px 16px; border-top: 2px solid rgba(242, 194, 48, 0.85); }
+.pc-body { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 14px 14px 16px; border-top: 2px solid rgba(255, 211, 42, 0.85); }
 .pc-name {
   font-family: 'Playfair Display', Georgia, serif; font-size: 1.04rem; font-weight: 700; line-height: 1.25; color: var(--pc-ink);
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; /* full names, even the longest */
@@ -80,7 +80,7 @@
 .pc-term { margin-top: auto; padding-top: 2px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; color: var(--pc-maroon); font-variant-numeric: tabular-nums; }
 
 /* current President — subtle maroon label + yellow accent */
-.pc-card.is-current { border-color: rgba(128, 0, 32, 0.45); border-top: 3px solid var(--pc-yellow); box-shadow: 0 12px 30px rgba(128, 0, 32, 0.14); }
+.pc-card.is-current { border-color: rgba(181, 18, 27, 0.45); border-top: 3px solid var(--pc-yellow); box-shadow: 0 12px 30px rgba(181, 18, 27, 0.14); }
 .pc-card.is-current .pc-body { background: linear-gradient(180deg, #FFFFFF 0%, #FFFBEE 100%); border-top-color: var(--pc-yellow); }
 .pc-now {
   position: absolute; left: 10px; bottom: 10px; z-index: 1;
@@ -95,9 +95,9 @@
 .pc-plate {
   display: grid; place-items: center; width: 100%; height: 100%;
   background:
-    repeating-linear-gradient(0deg, rgba(128, 0, 32, 0.04) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(0deg, rgba(181, 18, 27, 0.04) 0 2px, transparent 2px 7px),
     radial-gradient(circle at 50% 40%, #FFFFFF 0%, #FAF7F2 65%, #F1ECE4 100%);
-  box-shadow: inset 0 0 0 8px #FFFFFF, inset 0 0 0 9px rgba(242, 194, 48, 0.9);
+  box-shadow: inset 0 0 0 8px #FFFFFF, inset 0 0 0 9px rgba(255, 211, 42, 0.9);
 }
 .pc-plate span { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 2.6rem; letter-spacing: 0.04em; color: var(--pc-maroon); }
 
@@ -109,7 +109,7 @@
   background: #FFFFFF; color: var(--pc-maroon); border: 2px solid var(--pc-maroon);
   transition: background 0.25s ease, color 0.25s ease, transform 0.25s var(--pc-ease), box-shadow 0.25s ease;
 }
-.pc-btn:hover { background: var(--pc-maroon); color: var(--pc-yellow); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(128, 0, 32, 0.25); }
+.pc-btn:hover { background: var(--pc-maroon); color: var(--pc-yellow); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(181, 18, 27, 0.25); }
 .pc-btn:active { transform: translateY(0) scale(0.96); }
 .pc-btn:focus-visible { outline: 3px solid var(--pc-yellow); outline-offset: 3px; }
 .pc-btn-play { width: 42px; height: 42px; background: var(--pc-maroon); color: #FFFFFF; border-color: var(--pc-maroon); }

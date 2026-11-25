@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import api, { setSession } from '../lib/api';
+import { PARTY_LOGO } from '../config/branding';
 import { translations, LANGUAGES, LANG_KEY, getInitialLang, saveLang } from '../i18n/translations';
 import '../App.css';
 
@@ -74,7 +75,7 @@ export default function Login() {
           <span className="decor-circle c3" />
         </div>
         <div className="brand-inner">
-          <img src="/images/logo.png" alt="Party logo" className="brand-logo" />
+          <span className="party-logo-circle login-party-logo"><img src={PARTY_LOGO} alt="Party logo" /></span>
           <div className="rise-word">RISE</div>
           <div className="portal-title">Governance Hub</div>
           <p className="portal-subtitle">{t.portalTagline}</p>

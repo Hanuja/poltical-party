@@ -11,9 +11,11 @@ date_default_timezone_set((string)env('APP_TIMEZONE', 'Asia/Colombo'));
 const MEM_LANGS = ['en', 'ta', 'si'];
 const MEM_ADMIN_ROLES = ['Super Admin', 'Admin'];
 const MEM_INTERESTS = ['youth_wing', 'womens_wing', 'community_outreach', 'social_welfare', 'education', 'policy_research', 'digital_media', 'volunteer'];
-const MEM_GENDERS = ['female', 'male', 'other', 'prefer_not'];
+const MEM_GENDERS = ['male', 'female', 'other'];
+const MEM_MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'];
 const MEM_CITIZENSHIP = ['sri_lankan', 'dual'];
-const MEM_DECLARATIONS = ['rules', 'constitution', 'conduct', 'privacy', 'declaration'];
+const MEM_DECLARATIONS = ['rules', 'constitution', 'conduct', 'privacy', 'declaration', 'privacyConfirmed', 'finalConfirmed'];
+const MEM_PLEDGES = ['homeland', 'law_democracy', 'constitution_conduct', 'confidentiality', 'equality', 'integrity', 'truthful_speech', 'safety_dignity', 'environment', 'public_service', 'accountability'];
 const MEM_TEMPLATES = ['received', 'approved', 'declined'];
 // Public status names (API) for the DB enum values.
 const MEM_STATUS_PUBLIC = ['pending' => 'received', 'under_review' => 'under_review', 'verified' => 'approved', 'rejected' => 'declined', 'suspended' => 'suspended', 'expired' => 'expired'];
@@ -137,7 +139,7 @@ function mem_next_membership_id(): string {
     $s->execute([$year]);
     $next = (int)$s->fetchColumn() + 1;
     $db->prepare('UPDATE membership_sequences SET last_value = ? WHERE seq_year = ?')->execute([$next, $year]);
-    $prefix = preg_replace('/[^A-Z0-9]/', '', strtoupper(mem_setting('id_prefix', 'ITAK'))) ?: 'ITAK';
+    $prefix = preg_replace('/[^A-Z0-9]/', '', strtoupper(mem_setting('id_prefix', 'TMK'))) ?: 'TMK';
     return sprintf('%s-%d-%06d', $prefix, $year, $next);
 }
 
@@ -203,12 +205,16 @@ function mem_fill(string $tpl, array $vars): string {
 function mem_render_email(string $key, string $lang, array $vars): array {
     $t = $vars['__template'] ?? mem_template($key, $lang);
     $site = mem_public_site_url();
-    $nameTa = mem_setting('party_name_ta', 'இலங்கைத் தமிழரசுக் கட்சி');
-    $nameEn = mem_setting('party_name_en', 'Ilankai Tamil Arasu Katchi');
+    $nameTa = mem_setting('party_name_ta', 'தாயக மக்கள் கழகம்');
+    $nameEn = mem_setting('party_name_en', 'Thayaga Makkal Kazhagam (TMK)');
+    $nameSi = mem_setting('party_name_si', 'තායක ජනතා සංවිධානය');
     $slogan = mem_setting_lang('slogan', $t['lang'] ?? $lang, true);
     $contact = mem_contact();
     $vars += ['party_name' => $nameEn, 'track_url' => $site ? $site . '/membership?track=1' : '(tracking page link not configured)'];
     if (($t['lang'] ?? $lang) === 'ta') $vars['party_name'] = $nameTa;
+    if (($t['lang'] ?? $lang) === 'si') $vars['party_name'] = $nameSi;
+    $nameLocal = $vars['party_name']; // official name in the email's language
+    $isEn = ($t['lang'] ?? $lang) === 'en';
 
     $subject = mem_fill($t['subject'], $vars);
     $heading = mem_fill($t['heading'], $vars);
@@ -221,7 +227,7 @@ function mem_render_email(string $key, string $lang, array $vars): array {
         $p = preg_replace('#(https?://[^\s<]+)#', '<a href="$1" style="color:#800020;font-weight:600">$1</a>', $p);
         $paras .= '<p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#171717">' . nl2br($p) . '</p>';
     }
-    $logo = $site ? '<img src="' . $e($site . '/images/logo.png') . '" width="64" height="64" alt="" style="display:block;margin:0 auto 12px;border:0;border-radius:50%;background:#fff">' : '';
+    $logo = $site ? '<img src="' . $e($site . '/images/logo.png') . '" width="88" height="88" alt="" style="display:block;width:88px;height:88px;max-width:100%;object-fit:contain;object-position:center;margin:0 auto 12px;border:0">' : '';
     $sloganHtml = $slogan !== '' ? '<p style="margin:10px 0 0;font-size:13px;letter-spacing:.04em;color:#FDB913;font-style:italic">' . $e($slogan) . '</p>' : '';
     $links = [];
     if ($site) $links[] = '<a href="' . $e($site) . '" style="color:#F2C230;text-decoration:none">' . $e(preg_replace('#^https?://#', '', $site)) . '</a>';
@@ -234,12 +240,12 @@ function mem_render_email(string $key, string $lang, array $vars): array {
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F5F5;padding:24px 12px"><tr><td align="center">'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E9E2DA">'
         . '<tr><td style="background:#800020;padding:28px 24px 24px;text-align:center;border-bottom:4px solid #F2C230">' . $logo
-        . '<p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;line-height:1.4">' . $e($nameTa) . '</p>'
-        . '<p style="margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.18em;color:#ffffff;opacity:.9">' . $e(mb_strtoupper($nameEn)) . '</p>'
+        . '<p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;line-height:1.4">' . $e($nameLocal) . '</p>'
+        . ($isEn ? '' : '<p style="margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.18em;color:#ffffff;opacity:.9">' . $e(mb_strtoupper($nameEn)) . '</p>')
         . $sloganHtml . '</td></tr>'
         . '<tr><td style="padding:32px 28px 12px"><h1 style="margin:0 0 18px;font-size:22px;line-height:1.3;color:#800020;font-family:Georgia,\'Times New Roman\',serif">' . $e($heading) . '</h1>' . $paras . '</td></tr>'
         . '<tr><td style="background:#171717;padding:22px 24px;text-align:center;color:#bdbdbd;font-size:12px;line-height:1.6">' . $linksHtml
-        . '<p style="margin:0">' . $e($nameEn) . ' · ' . $e($nameTa) . '</p>'
+        . '<p style="margin:0">' . $e($nameLocal) . '</p>'
         . '<p style="margin:6px 0 0;color:#8a8a8a">This is an automated message about your membership application. Please do not share your reference with anyone.</p>'
         . '</td></tr></table></td></tr></table></body></html>';
 

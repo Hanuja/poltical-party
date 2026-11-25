@@ -103,9 +103,9 @@ export default function Events() {
   };
 
   const STAT = [
-    { n: stats.total, l: 'Total Events', i: CalendarDays, c: '#7A1735' },
-    { n: stats.published, l: 'Published', i: CheckCircle, c: '#7A1735' },
-    { n: stats.upcoming, l: 'Upcoming', i: Clock, c: '#4A1024' },
+    { n: stats.total, l: 'Total Events', i: CalendarDays, c: '#B5121B' },
+    { n: stats.published, l: 'Published', i: CheckCircle, c: '#B5121B' },
+    { n: stats.upcoming, l: 'Upcoming', i: Clock, c: '#6E0A10' },
     { n: stats.live, l: 'Live', i: Globe, c: '#b91c1c' },
     { n: stats.completed, l: 'Completed', i: FileText, c: '#166534' },
     { n: stats.drafts, l: 'Drafts', i: FileText, c: '#666' },
@@ -167,7 +167,7 @@ export default function Events() {
                   <td>{e.venue || '—'}{e.city ? <span>{e.city}</span> : null}</td>
                   <td><span className={`ev-badge ${STAGE_BADGE[e.stage]?.[1]||''}`}>{STAGE_BADGE[e.stage]?.[0]||e.stage}</span></td>
                   <td><span className={`ev-badge ${BADGE[e.publishStatus]||''}`}>{e.publishStatus}</span></td>
-                  <td>{e.isFeatured ? <Star size={15} color="#E5B94C" fill="#E5B94C" /> : '—'}</td>
+                  <td>{e.isFeatured ? <Star size={15} color="#FFD32A" fill="#FFD32A" /> : '—'}</td>
                   <td className="ev-actions">
                     <button title="View" onClick={()=>openView(e)}><Eye size={15}/></button>
                     <Link to={`/events/${e.id}/edit`} title="Edit"><Pencil size={15}/></Link>

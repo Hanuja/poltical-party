@@ -4,9 +4,9 @@ import { motion, useReducedMotion } from 'framer-motion'
 
 const DIGITS = 6
 const COPY = {
-  en: { eyebrow: 'A stronger voice, together', title: 'JOIN OUR GROWING COMMUNITY', body: 'Become a member of our community and stand together for a stronger, more informed society.', count: 'OUR ACTIVE MEMBERS', cta: 'BECOME A MEMBER', hint: 'Your membership begins with one step.' },
-  ta: { eyebrow: 'ஒன்றிணைந்த வலிமையான குரல்', title: 'நமது பயணத்தில் உங்கள் இடம்.', body: 'ஒவ்வொரு மாவட்டத்திற்கும் கண்ணியம், வாய்ப்பு மற்றும் சிறந்த எதிர்காலத்திற்காக ஒன்றிணையும் சமூகத்தில் இணையுங்கள்.', count: 'அங்கீகரிக்கப்பட்ட உறுப்பினர்கள்', cta: 'உறுப்பினராகுங்கள்', hint: 'உங்கள் பயணம் ஒரு படியில் தொடங்குகிறது.' },
-  si: { eyebrow: 'එකට ශක්තිමත් හඬක්', title: 'අපේ ගමනේ ඔබටත් තැනක්.', body: 'සෑම දිස්ත්‍රික්කයකටම ගෞරවය, අවස්ථා සහ යහපත් අනාගතයක් වෙනුවෙන් එක්වන ප්‍රජාවට එකතු වන්න.', count: 'අනුමත සාමාජිකයන්', cta: 'සාමාජිකයෙකු වන්න', hint: 'ඔබේ ගමන එක් පියවරකින් ඇරඹේ.' },
+  en: { eyebrow: 'A stronger voice, together', title: 'JOIN OUR GROWING COMMUNITY', body: 'Become a member of our community and stand together for a stronger, more informed society.', chain: 'COMMUNITY · CONNECTION · SERVICE', count: 'OUR ACTIVE MEMBERS', cta: 'BECOME A MEMBER', hint: 'Your membership begins with one step.' },
+  ta: { eyebrow: 'ஒன்றிணைந்த வலிமையான குரல்', title: 'நமது பயணத்தில் உங்கள் இடம்.', body: 'ஒவ்வொரு மாவட்டத்திற்கும் கண்ணியம், வாய்ப்பு மற்றும் சிறந்த எதிர்காலத்திற்காக ஒன்றிணையும் சமூகத்தில் இணையுங்கள்.', chain: 'சமூகம் · இணைப்பு · சேவை', count: 'அங்கீகரிக்கப்பட்ட உறுப்பினர்கள்', cta: 'உறுப்பினராகுங்கள்', hint: 'உங்கள் பயணம் ஒரு படியில் தொடங்குகிறது.' },
+  si: { eyebrow: 'එකට ශක්තිමත් හඬක්', title: 'අපේ ගමනේ ඔබටත් තැනක්.', body: 'සෑම දිස්ත්‍රික්කයකටම ගෞරවය, අවස්ථා සහ යහපත් අනාගතයක් වෙනුවෙන් එක්වන ප්‍රජාවට එකතු වන්න.', chain: 'ප්‍රජාව · සම්බන්ධතාව · සේවය', count: 'අනුමත සාමාජිකයන්', cta: 'සාමාජිකයෙකු වන්න', hint: 'ඔබේ ගමන එක් පියවරකින් ඇරඹේ.' },
 }
 
 function MemberFigure() {
@@ -14,7 +14,7 @@ function MemberFigure() {
     <defs>
       <linearGradient id="mbx-shirt" x1="180" y1="165" x2="325" y2="390" gradientUnits="userSpaceOnUse"><stop stopColor="#fff"/><stop offset=".5" stopColor="#f3f3f1"/><stop offset="1" stopColor="#cbd0d0"/></linearGradient>
       <linearGradient id="mbx-skin" x1="270" y1="55" x2="330" y2="155" gradientUnits="userSpaceOnUse"><stop stopColor="#efc5a1"/><stop offset="1" stopColor="#a96d4c"/></linearGradient>
-      <linearGradient id="mbx-pants" x1="194" y1="355" x2="336" y2="658" gradientUnits="userSpaceOnUse"><stop stopColor="#27282b"/><stop offset="1" stopColor="#08090b"/></linearGradient>
+      <linearGradient id="mbx-pants" x1="194" y1="355" x2="336" y2="658" gradientUnits="userSpaceOnUse"><stop stopColor="#27282B"/><stop offset="1" stopColor="#08090B"/></linearGradient>
       <linearGradient id="mbx-chain" x1="7" y1="300" x2="135" y2="364" gradientUnits="userSpaceOnUse"><stop stopColor="#7d8588"/><stop offset=".48" stopColor="#f4f6f6"/><stop offset="1" stopColor="#707679"/></linearGradient>
       <filter id="mbx-shadow" x="80" y="30" width="400" height="680" colorInterpolationFilters="sRGB"><feGaussianBlur stdDeviation="13"/></filter>
     </defs>
@@ -66,11 +66,10 @@ export default function MembershipExperienceHero({ language = 'en', count = 0, o
 
   return <section className="mbx-hero" aria-labelledby="mbx-title">
     <div className="mbx-wrap">
-      <div className="mbx-brand"><img src="/images/logo.png" alt="Ilankai Tamil Arasu Katchi" /><span>ILANKAI TAMIL ARASU KATCHI</span></div>
       <div className="mbx-main">
         <div className="mbx-stage">
           <div className="mbx-stage-glow" aria-hidden="true" />
-          <div className="mbx-chain-label" aria-hidden="true">COMMUNITY · CONNECTION · SERVICE</div>
+          <div className="mbx-chain-label" aria-hidden="true">{copy.chain}</div>
           <MemberFigure />
           <motion.span className="mbx-tap-dot" aria-hidden="true" animate={reduce ? {} : { scale: [1, 1.3, 1], opacity: [.45, .9, .45] }} transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }} />
         </div>

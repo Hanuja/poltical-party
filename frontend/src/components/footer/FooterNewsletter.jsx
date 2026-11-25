@@ -5,7 +5,7 @@ import { newsletterApi } from '../../services/api'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /**
- * "Stay Connected With RISE" — subscribes through POST /api/newsletter/?action=subscribe.
+ * "Stay Connected With TMK" — subscribes through POST /api/newsletter/?action=subscribe.
  * The API answers 409 for an address that is already subscribed; that is shown as its own message.
  */
 export default function FooterNewsletter({ content, ui, language }) {

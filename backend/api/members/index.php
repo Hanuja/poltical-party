@@ -24,14 +24,18 @@ try {
     switch ("$method $action") {
         case 'GET page':          mem_public_page(); break;
         case 'GET count':         mem_public_count(); break;
+        case 'GET download-form': mem_public_download_form(); break;
         case 'POST apply':        mem_apply(); break;
         case 'POST register':     mem_apply(); break; // legacy name used by older frontend code
+        case 'POST apply-pdf':    mem_apply_pdf(); break;
         case 'POST track':        mem_track(); break;
         case 'POST draft-save':   mem_draft_save(); break;
         case 'POST draft-load':   mem_draft_load(); break;
         case 'GET list':          mem_admin_list(); break;
         case 'GET detail':        mem_admin_detail(); break;
         case 'GET photo':         mem_admin_photo(); break;
+        case 'GET pdf':           mem_admin_pdf(); break;
+        case 'GET supporting-pdf': mem_admin_supporting_pdf(); break;
         case 'POST decide':       mem_admin_decide(); break;
         case 'POST resend-email': mem_admin_resend(); break;
         case 'GET settings':      mem_admin_settings_get(); break;
@@ -81,8 +85,19 @@ function mem_public_page(): void {
 /** Public aggregate only; never expose applicant records through the counter. */
 function mem_public_count(): void {
     header('Cache-Control: no-store');
-    $count = (int)db()->query("SELECT COUNT(*) FROM party_members WHERE status = 'verified' AND deleted_at IS NULL AND application_ref IS NOT NULL AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)")->fetchColumn();
+    $count = (int)db()->query("SELECT COUNT(DISTINCT membership_id) FROM party_members WHERE status = 'verified' AND membership_id IS NOT NULL AND deleted_at IS NULL AND application_ref IS NOT NULL AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)")->fetchColumn();
     ok(['count' => $count]);
+}
+
+function mem_public_download_form(): void {
+    $file = dirname(__DIR__, 2) . '/uploads/membership/templates/application_form.pdf';
+    if (!is_file($file)) fail('Form not available', 404);
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="Membership_Application_Form.pdf"');
+    header('Content-Length: ' . filesize($file));
+    header('Cache-Control: public, max-age=86400');
+    readfile($file);
+    exit;
 }
 
 function mem_clean(?string $v, int $max): string {
@@ -119,7 +134,9 @@ function mem_validate_application(array $d, bool $requirePhoto, ?array $photo): 
     }
 
     $c['gender'] = (string)($d['gender'] ?? '');
-    if ($c['gender'] !== '' && !in_array($c['gender'], MEM_GENDERS, true)) $e['gender'] = 'invalid';
+    if (!in_array($c['gender'], MEM_GENDERS, true)) $e['gender'] = 'required';
+    $c['maritalStatus'] = (string)($d['maritalStatus'] ?? '');
+    if (!in_array($c['maritalStatus'], MEM_MARITAL_STATUSES, true)) $e['maritalStatus'] = 'required';
 
     $c['residentialAddress'] = mem_clean($d['residentialAddress'] ?? '', 500);
     if (mb_strlen($c['residentialAddress']) < 5) $e['residentialAddress'] = 'required';
@@ -166,6 +183,11 @@ function mem_validate_application(array $d, bool $requirePhoto, ?array $photo): 
     if ($c['previousMember'] && mb_strlen($c['previousOrganisation']) < 2) $e['previousOrganisation'] = 'required';
 
     foreach (MEM_DECLARATIONS as $k) if (empty($d['declarations'][$k])) $e['declarations.' . $k] = 'required';
+    $c['pledges'] = [];
+    foreach (MEM_PLEDGES as $k) {
+        $c['pledges'][$k] = !empty($d['pledges'][$k]);
+        if (!$c['pledges'][$k]) $e['pledges'] = 'pledges_incomplete';
+    }
     $c['signature'] = mem_clean($d['signature'] ?? '', 160);
     $norm = fn($s) => mb_strtolower(preg_replace('/\s+/u', ' ', trim($s)));
     if ($c['signature'] === '') $e['signature'] = 'required';
@@ -206,6 +228,25 @@ function mem_store_photo(array $file): array {
     return ['path' => 'uploads/membership/private/' . $name];
 }
 
+function mem_store_pdf(array $file): array {
+    $max = (int)env('UPLOAD_MAX_PDF', 10485760); // 10MB
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) return ['error' => 'upload_failed'];
+    if ($file['size'] > $max) return ['error' => 'too_large'];
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $handle = fopen($file['tmp_name'], 'rb');
+    $signature = $handle ? fread($handle, 5) : '';
+    if ($handle) fclose($handle);
+    if ($mime !== 'application/pdf' || $signature !== '%PDF-'
+        || strtolower(pathinfo((string)($file['name'] ?? ''), PATHINFO_EXTENSION)) !== 'pdf') return ['error' => 'type'];
+
+    $dir = dirname(__DIR__, 2) . '/uploads/membership/pdf';
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    if (!is_file($dir . '/.htaccess')) file_put_contents($dir . '/.htaccess', "# PDF applications: served only through the admin API.\nRequire all denied\n");
+    $name = bin2hex(random_bytes(16)) . '.pdf';
+    if (!move_uploaded_file($file['tmp_name'], $dir . '/' . $name)) return ['error' => 'upload_failed'];
+    return ['path' => 'uploads/membership/pdf/' . $name];
+}
+
 function mem_apply(): void {
     mem_rate_limit('apply', 5, 3600);
     $raw = $_POST['data'] ?? null;
@@ -236,18 +277,21 @@ function mem_apply(): void {
 
     $ref = mem_new_reference();
     $now = date('Y-m-d H:i:s');
-    $decl = array_fill_keys(MEM_DECLARATIONS, true) + ['acceptedAt' => $now];
+    $decl = array_fill_keys(MEM_DECLARATIONS, true) + [
+        'pledges' => $c['pledges'],
+        'acceptedAt' => $now,
+    ];
     $db->beginTransaction();
-    $ins = $db->prepare('INSERT INTO party_members (application_ref, full_name, date_of_birth, gender, phone, email,
+    $ins = $db->prepare('INSERT INTO party_members (application_ref, full_name, date_of_birth, gender, marital_status, phone, email,
         residential_address, mailing_address, province_id, district_id, electoral_division_id, nic_number, citizenship,
         occupation, interests, previous_member, previous_organisation, preferred_language, declarations, declaration_name,
-        declared_at, photo_path, status, registered_at, submitted_ip)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,\'pending\',?,?)');
-    $ins->execute([$ref, $c['fullName'], $c['dateOfBirth'], $c['gender'] ?: null, $c['phone'], $c['email'],
+        declared_at, photo_path, status, registered_at, submitted_ip, application_method, application_language)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,\'pending\',?,?,?,?)');
+    $ins->execute([$ref, $c['fullName'], $c['dateOfBirth'], $c['gender'], $c['maritalStatus'], $c['phone'], $c['email'],
         $c['residentialAddress'], $c['mailingSame'] ? null : $c['mailingAddress'], $c['provinceId'], $c['districtId'], $c['divisionId'],
         $c['nic'], $c['citizenship'], $c['occupation'], json_encode($c['interests']), $c['previousMember'] ? 1 : 0,
         $c['previousOrganisation'] ?: null, $c['language'], json_encode($decl), $c['signature'], $now, $photoPath, $now,
-        $_SERVER['REMOTE_ADDR'] ?? null]);
+        $_SERVER['REMOTE_ADDR'] ?? null, 'online', $c['language']]);
     $id = (int)$db->lastInsertId();
     $db->prepare("INSERT INTO membership_verification_logs (member_id, reviewer_id, reviewer_role, previous_status, new_status, notes, decision_at)
         VALUES (?, NULL, 'applicant', NULL, 'pending', 'Application submitted online', ?)")->execute([$id, $now]);
@@ -267,6 +311,107 @@ function mem_apply(): void {
 
     ok(['reference' => $ref, 'submittedAt' => date('c', strtotime($now)), 'status' => 'received',
         'email' => $c['email'], 'emailStatus' => $emailStatus], 201);
+}
+
+function mem_apply_pdf(): void {
+    mem_rate_limit('apply-pdf', 5, 3600);
+
+    // Required fields for PDF application
+    $fullName = mem_clean($_POST['fullName'] ?? '', 160);
+    $nic = mem_norm_nic($_POST['nic'] ?? '');
+    $phone = mem_norm_phone($_POST['phone'] ?? '');
+    $email = strtolower(trim((string)($_POST['email'] ?? '')));
+    $districtId = (int)($_POST['districtId'] ?? 0);
+    $language = mem_lang($_POST['language'] ?? 'en');
+
+    // Validate required fields
+    $errors = [];
+    if (mb_strlen($fullName) < 3) $errors['fullName'] = 'required';
+    if (!preg_match('/^(\d{2})\d{7}[VX]$/', $nic) && !preg_match('/^(\d{4})\d{8}$/', $nic)) $errors['nic'] = 'invalid';
+    if (!preg_match('/^\+?\d{9,15}$/', $phone)) $errors['phone'] = 'invalid';
+    if ($email !== '' && !v_email($email)) $errors['email'] = 'invalid';
+    if (!$districtId) $errors['districtId'] = 'required';
+    else { $district = db()->prepare('SELECT id FROM districts WHERE id = ?'); $district->execute([$districtId]); if (!$district->fetchColumn()) $errors['districtId'] = 'invalid'; }
+
+    if ($errors) fail('Please check the highlighted fields.', 422, ['code' => 'validation', 'fields' => $errors]);
+
+    // Validate PDF file
+    if (!isset($_FILES['pdf']) || ($_FILES['pdf']['error'] ?? 4) === UPLOAD_ERR_NO_FILE) {
+        fail('Please upload the completed application PDF.', 422, ['code' => 'validation', 'fields' => ['pdf' => 'required']]);
+    }
+
+    $pdfValidation = mem_validate_pdf_upload($_FILES['pdf']);
+    if ($pdfValidation) fail('Please check the highlighted fields.', 422, ['code' => 'validation', 'fields' => ['pdf' => $pdfValidation]]);
+
+    $supportingFiles = [];
+    $supportingTotal = 0;
+    if (isset($_FILES['supporting'])) {
+        $batch = $_FILES['supporting'];
+        $count = is_array($batch['name'] ?? null) ? count($batch['name']) : 0;
+        if ($count > 5) fail('You can add up to five supporting documents.', 422, ['code' => 'validation', 'fields' => ['supporting' => 'too_many']]);
+        for ($i = 0; $i < $count; $i++) {
+            $item = ['name' => $batch['name'][$i], 'type' => $batch['type'][$i], 'tmp_name' => $batch['tmp_name'][$i], 'error' => $batch['error'][$i], 'size' => $batch['size'][$i]];
+            if (($item['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) continue;
+            $validation = mem_validate_pdf_upload($item);
+            if ($validation) fail('Please check the supporting documents.', 422, ['code' => 'validation', 'fields' => ['supporting' => $validation]]);
+            $supportingTotal += (int)$item['size'];
+            if ($supportingTotal > 25 * 1024 * 1024) fail('Supporting documents must total 25 MB or less.', 422, ['code' => 'validation', 'fields' => ['supporting' => 'too_large']]);
+            $supportingFiles[] = $item;
+        }
+    }
+
+    // Optional photo upload
+    $db = db();
+    // Check for duplicate NIC
+    $dup = $db->prepare("SELECT id FROM party_members WHERE nic_number = ? AND deleted_at IS NULL AND status IN ('pending','under_review','verified') LIMIT 1");
+    $dup->execute([$nic]);
+    if ($dup->fetch()) {
+        fail('An application with this NIC number already exists.', 409, ['code' => 'duplicate', 'field' => 'nic']);
+    }
+
+    // Allocate/store files only after validation and duplicate checks to avoid orphan files.
+    $pdfResult = mem_store_pdf($_FILES['pdf']);
+    if (isset($pdfResult['error'])) fail('Please check the highlighted fields.', 422, ['code' => 'validation', 'fields' => ['pdf' => $pdfResult['error']]]);
+    $supportingPaths = [];
+    foreach ($supportingFiles as $supportingFile) {
+        $stored = mem_store_pdf($supportingFile);
+        if (isset($stored['error'])) {
+            foreach ($supportingPaths as $path) delete_upload($path);
+            delete_upload($pdfResult['path']);
+            fail('Please check the supporting documents.', 422, ['code' => 'validation', 'fields' => ['supporting' => $stored['error']]]);
+        }
+        $supportingPaths[] = $stored['path'];
+    }
+
+    $ref = mem_new_reference();
+    $now = date('Y-m-d H:i:s');
+    $db->beginTransaction();
+    $ins = $db->prepare('INSERT INTO party_members (application_ref, application_method, application_language, full_name, phone, email,
+        nic_number, district_id, pdf_path, supporting_documents, photo_path, status, registered_at, submitted_ip)
+        VALUES (?,?,?,?,?,?,?,?,?,?,NULL,\'pending\',?,?)');
+    $ins->execute([$ref, 'pdf', $language, $fullName, $phone, $email,
+        $nic, $districtId, $pdfResult['path'], json_encode($supportingPaths, JSON_UNESCAPED_SLASHES), $now,
+        $_SERVER['REMOTE_ADDR'] ?? null]);
+    $id = (int)$db->lastInsertId();
+    $db->commit();
+
+    activity_log(null, 'membership.pdf_applied', 'party_member', $id, ['name' => $fullName, 'reference' => $ref]);
+    mem_notify_admins('membership_application', 'New PDF membership application',
+        $fullName . ' · ' . $ref, '/membership/' . $id, 'party_member', $id);
+
+    ok(['reference' => $ref, 'submittedAt' => date('c', strtotime($now)), 'status' => 'received', 'email' => $email,
+        'emailStatus' => $email !== '' ? mem_send_event_email($id, 'received') : null], 201);
+}
+
+function mem_validate_pdf_upload(array $file): ?string {
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) return 'upload_failed';
+    if ((int)($file['size'] ?? 0) <= 0 || (int)$file['size'] > (int)env('UPLOAD_MAX_PDF', 10485760)) return 'too_large';
+    if (strtolower(pathinfo((string)($file['name'] ?? ''), PATHINFO_EXTENSION)) !== 'pdf') return 'type';
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $handle = fopen($file['tmp_name'], 'rb');
+    $signature = $handle ? fread($handle, 5) : '';
+    if ($handle) fclose($handle);
+    return $mime === 'application/pdf' && $signature === '%PDF-' ? null : 'type';
 }
 
 function mem_track(): void {
@@ -349,9 +494,11 @@ function mem_draft_load(): void {
 function mem_row_summary(array $r): array {
     return [
         'id' => (int)$r['id'], 'reference' => $r['application_ref'], 'membershipId' => $r['membership_id'],
+        'applicationMethod' => $r['application_method'] ?? 'online', 'applicationLanguage' => $r['application_language'] ?? 'en',
         'fullName' => $r['full_name'], 'email' => $r['email'], 'phone' => $r['phone'],
         'district' => $r['district_name'] ?? null, 'province' => $r['province_name'] ?? null,
-        'hasPhoto' => !empty($r['photo_path']),
+        'hasPhoto' => !empty($r['photo_path']), 'hasPdf' => !empty($r['pdf_path']),
+        'supportingDocumentCount' => count(json_decode($r['supporting_documents'] ?? '[]', true) ?: []),
         'status' => $r['status'], 'publicStatus' => MEM_STATUS_PUBLIC[$r['status']] ?? $r['status'],
         'submittedAt' => $r['created_at'], 'reviewedAt' => $r['reviewed_at'],
     ];
@@ -365,6 +512,7 @@ function mem_admin_list(): void {
     $status = $_GET['status'] ?? '';
     if (in_array($status, ['pending', 'under_review', 'verified', 'rejected'], true)) { $where[] = 'pm.status = ?'; $params[] = $status; }
     if (!empty($_GET['district'])) { $where[] = 'pm.district_id = ?'; $params[] = (int)$_GET['district']; }
+    if (!empty($_GET['method'])) { $where[] = 'pm.application_method = ?'; $params[] = $_GET['method']; }
     $q = trim((string)($_GET['q'] ?? ''));
     if ($q !== '') {
         $where[] = '(pm.full_name LIKE ? OR pm.email LIKE ? OR pm.application_ref LIKE ? OR pm.membership_id LIKE ? OR pm.nic_number LIKE ? OR pm.phone LIKE ?)';
@@ -434,6 +582,40 @@ function mem_admin_photo(): void {
     $abs = realpath(dirname(__DIR__, 2) . '/' . $m['photo_path']);
     if (!$abs || !$root || !str_starts_with($abs, $root) || !is_file($abs)) fail('No photo', 404);
     header('Content-Type: image/jpeg');
+    header('Cache-Control: private, no-store');
+    header('X-Content-Type-Options: nosniff');
+    header('Content-Length: ' . filesize($abs));
+    readfile($abs);
+    exit;
+}
+
+function mem_admin_pdf(): void {
+    mem_require_admin();
+    $m = mem_load_member((int)($_GET['id'] ?? 0));
+    if (!$m['pdf_path']) fail('No PDF', 404);
+    $root = realpath(dirname(__DIR__, 2) . '/uploads/membership/pdf');
+    $abs = realpath(dirname(__DIR__, 2) . '/' . $m['pdf_path']);
+    if (!$abs || !$root || !str_starts_with($abs, $root) || !is_file($abs)) fail('No PDF', 404);
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: inline; filename="application.pdf"');
+    header('Cache-Control: private, no-store');
+    header('X-Content-Type-Options: nosniff');
+    header('Content-Length: ' . filesize($abs));
+    readfile($abs);
+    exit;
+}
+
+function mem_admin_supporting_pdf(): void {
+    mem_require_admin();
+    $m = mem_load_member((int)($_GET['id'] ?? 0));
+    $files = json_decode($m['supporting_documents'] ?? '[]', true) ?: [];
+    $index = (int)($_GET['file'] ?? -1);
+    if (!isset($files[$index])) fail('No supporting document', 404);
+    $root = realpath(dirname(__DIR__, 2) . '/uploads/membership/pdf');
+    $abs = realpath(dirname(__DIR__, 2) . '/' . $files[$index]);
+    if (!$abs || !$root || !str_starts_with($abs, $root) || !is_file($abs)) fail('No supporting document', 404);
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: inline; filename="supporting-document-' . ($index + 1) . '.pdf"');
     header('Cache-Control: private, no-store');
     header('X-Content-Type-Options: nosniff');
     header('Content-Length: ' . filesize($abs));

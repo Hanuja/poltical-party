@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams, useOutletContext } from 'react-router-dom';
 import {
   ArrowLeft, Cloud, CloudOff, Check, LoaderCircle, ImagePlus, Trash2, Eye, Send, EyeOff, FileText,
-  UserRound, Languages, Mail, Phone, Globe, RefreshCw, X, BookOpen, BadgeCheck, CalendarDays, Building2,
+  UserRound, Mail, Phone, Globe, RefreshCw, X, BookOpen, BadgeCheck, CalendarDays, Building2,
 } from 'lucide-react';
 import {
   FORM_LANGS, formStrings, getContentLang, saveContentLang,
@@ -32,9 +32,9 @@ export default function LeaderForm() {
   const navigate = useNavigate();
   const routeKey = id || search.get('key') || '';
 
-  // Form language: labels, buttons, messages, and which language version of the content is edited.
+  // Form language: labels, buttons, messages. Content language is fixed to English.
   const { lang: ui } = useOutletContext();
-  const [contentLang, setContentLang] = useState(getContentLang);
+  const contentLang = 'en';
   const s = formStrings[ui];
 
   const [meta, setMeta] = useState(null);
@@ -63,8 +63,6 @@ export default function LeaderForm() {
   const timer = useRef(null);
   const retryTimer = useRef(null);
   const fileInput = useRef(null);
-
-  const switchContentLang = (code) => { setContentLang(code); saveContentLang(code); };
 
   // ---------- Load ----------
   useEffect(() => { loadMeta().then(setMeta).catch(() => {}); }, []);
@@ -285,23 +283,6 @@ export default function LeaderForm() {
   };
 
   // ---------- Render ----------
-  // Content-language tabs remain local to the editor; the interface language is global in AdminHeader.
-  const LanguageSwitch = (
-    <div className="lm-uiswitch" role="group" aria-label={s.contentLanguage}>
-      <span className="lm-uiswitch-label"><Languages size={15} /> {s.contentLanguage}</span>
-      {FORM_LANGS.map((l) => {
-        const done = langComplete(form.translations[l.code]);
-        return (
-          <button key={l.code} type="button" lang={l.code} className={contentLang === l.code ? 'active' : ''}
-            aria-pressed={contentLang === l.code} onClick={() => switchContentLang(l.code)} title={done ? s.langComplete : s.langMissing}>
-            {l.label}
-            {done && <Check size={12} strokeWidth={3} className="lm-uiswitch-done" aria-label={s.langComplete} />}
-          </button>
-        );
-      })}
-    </div>
-  );
-
   if (loadState !== 'ready') {
     return (
       <div className="lm-page" lang={ui}>
@@ -326,7 +307,6 @@ export default function LeaderForm() {
     .sort((a, b) => a.labels[ui].localeCompare(b.labels[ui], ui));
   const displayName = pickTr(form.translations, 'name', contentLang);
   const section = sectionOf(form.positionKey);
-  const chip = <b className="lm-lang-chip" lang={contentLang}>{FORM_LANGS.find((l) => l.code === contentLang).short}</b>;
   const noticeText = notice && (notice.text || s[notice.key]);
 
   return (
@@ -337,7 +317,6 @@ export default function LeaderForm() {
           <h1>{leaderId ? s.editTitle : s.createTitle}</h1>
         </div>
         <div className="lm-head-side">
-          {LanguageSwitch}
           <SaveIndicator s={s} state={saveState} savedAt={savedAt} live={status === 'published'} lang={ui} onRetry={saveNow} />
         </div>
       </div>
@@ -351,49 +330,19 @@ export default function LeaderForm() {
       {saveState === 'error' && <div className="lm-notice lm-notice-error" role="alert"><span>{s.failed} — {s.failedKept}</span></div>}
 
       <div className="lm-grid">
-        <aside className="lm-aside">
-          <section className="lm-card lm-photo-card">
-            <h2 className="lm-card-title"><UserRound size={17} /> {s.secPhoto}</h2>
-            <div className={`lm-photo ${form.imageUrl ? 'has-img' : ''}`}>
-              {form.imageUrl
-                ? <img src={form.imageUrl} alt={displayName} />
-                : <span className="lm-photo-empty"><UserRound size={54} strokeWidth={1.4} /></span>}
-              {uploading && <span className="lm-photo-busy"><LoaderCircle className="spin" size={26} /> {s.uploading}</span>}
-            </div>
-            <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" hidden
-              onChange={(e) => onFile(e.target.files?.[0])} />
-            <div className="lm-photo-actions">
-              <button type="button" className="lm-btn lm-btn-primary" disabled={uploading} onClick={() => fileInput.current?.click()}>
-                <ImagePlus size={16} /> {form.image ? s.changePhoto : s.uploadPhoto}
-              </button>
-              {form.image && (
-                <button type="button" className="lm-btn lm-btn-ghost" disabled={uploading}
-                  onClick={() => update((f) => ({ ...f, image: '', imageUrl: '' }))}>{s.removePhoto}</button>
-              )}
-            </div>
-            <p className="lm-hint">{s.photoHint}</p>
-          </section>
-
-          <section className={`lm-card lm-status-card st-${status}`}>
-            <h2 className="lm-card-title">{s.status}</h2>
-            <span className={`lm-badge lm-badge-${status}`}>{s[status]}</span>
-            <p className="lm-hint">{{ draft: s.hintDraft, published: s.hintPublished, inactive: s.hintInactive }[status]}</p>
-          </section>
-        </aside>
-
         <div className="lm-main">
           {/* 01 · Basic information */}
           <section className="lm-card">
             <h2 className="lm-card-title"><BadgeCheck size={17} /> {s.secBasic}</h2>
             <div className="lm-row">
               <label className={`lm-fld ${showErr('name') ? 'has-err' : ''}`}>
-                <span>{s.fullName} {chip}</span>
+                <span>{s.fullName}</span>
                 <input lang={contentLang} value={tr.name} placeholder={s.fullNamePh} maxLength={150}
                   onBlur={() => touch('name')} onChange={(e) => setTr('name', e.target.value)} />
                 {showErr('name') && <small className="lm-err">{s.requiredToPublish}</small>}
               </label>
               <label className={`lm-fld ${showErr('name') ? 'has-err' : ''}`}>
-                <span>{s.position} {chip}</span>
+                <span>{s.position}</span>
                 <input lang={contentLang} value={tr.position} placeholder={s.positionPh} maxLength={150}
                   onBlur={() => touch('name')} onChange={(e) => setTr('position', e.target.value)} />
                 {showErr('name') && <small className="lm-err">{s.requiredToPublish}</small>}
@@ -420,42 +369,41 @@ export default function LeaderForm() {
             </label>
           </section>
 
-          {/* 02 · Biography & leadership details (per language) */}
+          {/* 02 · Biography & leadership details */}
           <section className="lm-card">
             <h2 className="lm-card-title">
               <BookOpen size={17} /> {s.secBio}
-              <span className="lm-tag lm-tag-lang"><Globe size={12} /> {s.perLanguage}</span>
             </h2>
             <label className="lm-fld">
-              <span>{s.shortBio} {chip}</span>
+              <span>{s.shortBio}</span>
               <textarea lang={contentLang} rows={3} className="lm-textarea-sm" value={tr.shortBio} placeholder={s.shortBioPh}
                 maxLength={2000} onChange={(e) => setTr('shortBio', e.target.value)} />
             </label>
             <label className="lm-fld">
-              <span>{s.bio} {chip}</span>
+              <span>{s.bio}</span>
               <textarea lang={contentLang} rows={7} value={tr.bio} placeholder={s.bioPh}
                 onChange={(e) => setTr('bio', e.target.value)} />
             </label>
             <div className="lm-row">
               <label className="lm-fld">
-                <span>{s.resp} {chip}</span>
+                <span>{s.resp}</span>
                 <textarea lang={contentLang} rows={5} className="lm-textarea-sm" value={tr.responsibilities} placeholder={s.respPh}
                   onChange={(e) => setTr('responsibilities', e.target.value)} />
                 <small className="lm-hint lm-hint-tight">{s.respHint}</small>
               </label>
               <label className="lm-fld">
-                <span>{s.previous} {chip}</span>
+                <span>{s.previous}</span>
                 <textarea lang={contentLang} rows={5} className="lm-textarea-sm" value={tr.previousPositions} placeholder={s.previousPh}
                   onChange={(e) => setTr('previousPositions', e.target.value)} />
               </label>
             </div>
             <label className="lm-fld">
-              <span>{s.experience} {chip}</span>
+              <span>{s.experience}</span>
               <textarea lang={contentLang} rows={4} className="lm-textarea-sm" value={tr.politicalExperience} placeholder={s.experiencePh}
                 onChange={(e) => setTr('politicalExperience', e.target.value)} />
             </label>
             <label className="lm-fld">
-              <span>{s.achievements} {chip}</span>
+              <span>{s.achievements}</span>
               <textarea lang={contentLang} rows={4} className="lm-textarea-sm" value={tr.achievements} placeholder={s.achievementsPh}
                 onChange={(e) => setTr('achievements', e.target.value)} />
             </label>
@@ -482,7 +430,7 @@ export default function LeaderForm() {
                 {showErr('phone') && <small className="lm-err">{s.invalidPhone}</small>}
               </label>
               <label className="lm-fld">
-                <span><Building2 size={13} /> {s.office} {chip}</span>
+                <span><Building2 size={13} /> {s.office}</span>
                 <input lang={contentLang} value={tr.officeBranch} placeholder={s.officePh} maxLength={255}
                   onChange={(e) => setTr('officeBranch', e.target.value)} />
               </label>
@@ -515,6 +463,36 @@ export default function LeaderForm() {
             </div>
           </section>
         </div>
+
+        <aside className="lm-aside">
+          <section className="lm-card lm-photo-card">
+            <h2 className="lm-card-title"><UserRound size={17} /> {s.secPhoto}</h2>
+            <div className={`lm-photo ${form.imageUrl ? 'has-img' : ''}`}>
+              {form.imageUrl
+                ? <img src={form.imageUrl} alt={displayName} />
+                : <span className="lm-photo-empty"><UserRound size={54} strokeWidth={1.4} /></span>}
+              {uploading && <span className="lm-photo-busy"><LoaderCircle className="spin" size={26} /> {s.uploading}</span>}
+            </div>
+            <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" hidden
+              onChange={(e) => onFile(e.target.files?.[0])} />
+            <div className="lm-photo-actions">
+              <button type="button" className="lm-btn lm-btn-primary" disabled={uploading} onClick={() => fileInput.current?.click()}>
+                <ImagePlus size={16} /> {form.image ? s.changePhoto : s.uploadPhoto}
+              </button>
+              {form.image && (
+                <button type="button" className="lm-btn lm-btn-ghost" disabled={uploading}
+                  onClick={() => update((f) => ({ ...f, image: '', imageUrl: '' }))}>{s.removePhoto}</button>
+              )}
+            </div>
+            <p className="lm-hint">{s.photoHint}</p>
+          </section>
+
+          <section className={`lm-card lm-status-card st-${status}`}>
+            <h2 className="lm-card-title">{s.status}</h2>
+            <span className={`lm-badge lm-badge-${status}`}>{s[status]}</span>
+            <p className="lm-hint">{{ draft: s.hintDraft, published: s.hintPublished, inactive: s.hintInactive }[status]}</p>
+          </section>
+        </aside>
       </div>
 
       <div className="lm-actionbar">

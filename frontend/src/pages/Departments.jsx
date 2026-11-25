@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import PageBanner from '../components/PageBanner.jsx';
 import { DEPARTMENTS, getDepartment, getDepartmentText } from '../data/departmentsContent';
 import {
   Crown, Users, Heart, Megaphone, BookOpen, HandHeart, GraduationCap, MapPin, Scale, MonitorSmartphone,
@@ -64,7 +65,7 @@ export default function Departments() {
       <div className="dp-page">
         <section className="dp-hero dp-hero--detail">
           <Link to="/departments" className="dp-back"><ArrowLeft size={15} /> All Departments</Link>
-          <span className="dp-eyebrow">RISE | DEPARTMENTS &amp; TEAMS</span>
+          <span className="dp-eyebrow">TMK | DEPARTMENTS &amp; TEAMS</span>
           <h1>{t.name}</h1><p>{t.desc}</p>
         </section>
         <section className="dp-detail">
@@ -83,27 +84,18 @@ export default function Departments() {
 
   return (
     <div className="dp-page dp-premium">
-      {/* Cinematic hero */}
-      <section className="dp-cine-hero">
-        <div className="dp-cine-bg" />
-        <div className="dp-cine-inner">
-          <span className="dp-eyebrow">RISE | OUR ORGANISATION</span>
-          <h1 className="dp-cine-title">Departments <em>&amp;</em> Teams</h1>
-          <p className="dp-cine-sub">United in Purpose. Stronger Together.</p>
-          <p className="dp-cine-desc">Meet the dedicated teams working together to strengthen our organization, serve communities and build a better future.</p>
-          <a href="#dp-depts" className="dp-scroll"><span />Scroll</a>
-        </div>
-      </section>
+      {/* Page banner */}
+      <PageBanner breadcrumbItems={[{ label: 'Departments & Teams' }]} />
 
       {/* Intro */}
       <section className="dp-intro">
         <Reveal className="dp-intro-grid">
           <div>
             <span className="dp-eyebrow">OUR STRUCTURE</span>
-            <h2>One Organisation.<br />Many Dedicated Teams.</h2>
-            <p>Every department plays an important role in advancing our mission. Together, our dedicated teams bring leadership, expertise and commitment to every part of our organisation.</p>
+            <h2>One Organisation.<br />Many Departments &amp; Teams.</h2>
+            <p>Every department plays an important role in advancing our mission. Together, our departments &amp; teams bring leadership, expertise and commitment to every part of our organisation.</p>
           </div>
-          <div className="dp-intro-img"><img src="/images/team_leader.jpg" alt="RISE team" loading="lazy" /></div>
+          <div className="dp-intro-img"><img src="/images/team_leader.jpg" alt="TMK team" loading="lazy" /></div>
         </Reveal>
       </section>
 

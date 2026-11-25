@@ -1,6 +1,6 @@
 /* Political leaders — photo cards that open the vintage quote card (components/LeaderArchive.jsx) */
 .la {
-  --la-maroon: var(--color-primary, #800020); --la-burgundy: var(--color-primary-dark, #5c0018); --la-yellow: var(--color-accent, #F2C230);
+  --la-maroon: var(--color-primary, #B5121B); --la-burgundy: var(--color-primary-dark, #8F0E16); --la-yellow: var(--color-accent, #FFD32A);
   --la-ink: #171717; --la-ivory: #FFFFFF; --la-ease: cubic-bezier(0.22, 1, 0.36, 1);
   font-family: 'Inter', var(--font-body);
 }
@@ -16,13 +16,13 @@
   padding: 8px; background: #FFFFFF; border: 1px solid var(--la-yellow); border-radius: 4px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08); transition: box-shadow 0.4s ease, transform 0.4s var(--la-ease);
 }
-.la-card:hover, .la-card:focus-visible { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(128, 0, 32, 0.2); }
+.la-card:hover, .la-card:focus-visible { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(181, 18, 27, 0.2); }
 .la-card:focus-visible { outline: 3px solid var(--la-yellow); outline-offset: 3px; }
 .la-card.is-current { border: 2px solid var(--la-maroon); }
 .la-card-photo { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--la-ivory); }
 .la-card-photo img, .la-card-photo .la-plate { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s var(--la-ease); }
 .la-card:hover .la-card-photo img, .la-card:hover .la-card-photo .la-plate { transform: scale(1.07); }
-.la-card-veil { position: absolute; inset: 0; background: rgba(128, 0, 32, 0.62); opacity: 0; transition: opacity 0.5s ease; }
+.la-card-veil { position: absolute; inset: 0; background: rgba(181, 18, 27, 0.62); opacity: 0; transition: opacity 0.5s ease; }
 .la-card:hover .la-card-veil, .la-card:focus-visible .la-card-veil { opacity: 1; }
 .la-card-no { position: absolute; top: 8px; left: 10px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; color: var(--la-maroon); background: rgba(255, 255, 255, 0.85); padding: 3px 7px; border-radius: 3px; }
 .la-card-cap {
@@ -40,7 +40,7 @@
 .la-plate {
   display: grid; place-items: center;
   background:
-    repeating-linear-gradient(0deg, rgba(128, 0, 32, 0.04) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(0deg, rgba(181, 18, 27, 0.04) 0 2px, transparent 2px 7px),
     radial-gradient(circle at 50% 38%, #FFFFFF 0%, var(--la-ivory) 65%, #f4f1ec 100%);
   box-shadow: inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px var(--la-yellow);
 }
@@ -53,7 +53,7 @@
 /* ── TVK theme · maroon / yellow / white / black ─────── */
 .la-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
 .la-card-photo { aspect-ratio: 4 / 3.4; }
-.la-card { border: 1px solid rgba(242, 194, 48, 0.75); border-top: 4px solid var(--la-yellow); }
+.la-card { border: 1px solid rgba(255, 211, 42, 0.75); border-top: 4px solid var(--la-yellow); }
 .la-card:hover, .la-card:focus-visible { border-color: var(--la-yellow); }
 .la-card.is-current { border: 2px solid var(--la-maroon); border-top: 4px solid var(--la-maroon); }
 .la-card-no { background: var(--la-yellow); color: var(--la-ink); }
@@ -64,8 +64,8 @@
 .la-card-photo .la-plate span { font-size: 3.2rem; }
 
 /* section heading in the TVK palette */
-.pi2 .pi2-s3 .pi2-eyebrow { display: inline-block; padding: 6px 16px; border-radius: 999px; background: #FFFFFF; border: 2px solid #FFFFFF; color: var(--color-primary, #800020); font-weight: 800; box-shadow: 0 6px 18px rgba(128, 0, 32, 0.14); }
-.pi2-s3 .pi2-head h2 { color: var(--color-primary, #800020); }
+.pi2 .pi2-s3 .pi2-eyebrow { display: inline-block; padding: 6px 16px; border-radius: 999px; background: #FFFFFF; border: 2px solid #FFFFFF; color: var(--color-primary, #B5121B); font-weight: 800; box-shadow: 0 6px 18px rgba(181, 18, 27, 0.14); }
+.pi2-s3 .pi2-head h2 { color: var(--color-primary, #B5121B); }
 .pi2-s3 .pi2-sub { color: #171717; }
 
 /* ── 3D cards: tilt toward the cursor, with a moving light glare ── */
@@ -74,7 +74,7 @@
 .la-card:hover, .la-card:focus-visible {
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px);
   transition: box-shadow 0.4s ease, transform 0.12s linear;
-  box-shadow: calc(var(--ry) * -1.4) 26px 46px rgba(128, 0, 32, 0.22);
+  box-shadow: calc(var(--ry) * -1.4) 26px 46px rgba(181, 18, 27, 0.22);
 }
 .la-glare {
   position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 1; transition: opacity 0.4s ease;

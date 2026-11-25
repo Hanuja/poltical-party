@@ -23,7 +23,10 @@ export function typeLabel(t, type) {
   return type ? t(`announcements.types.${type}`, { defaultValue: type }) : ''
 }
 
-export const annPath = (a) => `/announcements/${a.slug || a.id}`
+export const annPath = (a) => {
+  const identifier = a?.slug || a?.id
+  return identifier ? `/announcements/${encodeURIComponent(String(identifier))}` : '/announcements'
+}
 
 // Motion presets — gentle rise/fade only. <MotionConfig reducedMotion="user"> wraps every page.
 export const rise = {

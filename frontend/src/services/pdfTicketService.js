@@ -20,7 +20,7 @@ export function composeQrImage(qrCanvas, code, { size = 1024, caption = true } =
   ctx.imageSmoothingEnabled = false
   ctx.drawImage(qrCanvas, pad, pad, size, size)
   if (caption) {
-    ctx.fillStyle = '#7A0019'
+    ctx.fillStyle = '#8F0E16'
     ctx.font = `700 ${Math.round(size * 0.055)}px ui-monospace, Menlo, Consolas, monospace`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
@@ -72,7 +72,7 @@ export async function downloadTicketPdf(ticketEl, qrHiRes, ticket) {
   })
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true })
-  doc.setProperties({ title: `Official Ticket ${ticket.ticketCode}`, subject: ticket.event?.title || 'Event ticket', creator: 'RISE' })
+  doc.setProperties({ title: `Official Ticket ${ticket.ticketCode}`, subject: ticket.event?.title || 'Event ticket', creator: 'Thayaga Makkal Kazhagam (TMK)' })
   const w = MM.pageW - MM.margin * 2
   const h = (shot.height / shot.width) * w
   const x = MM.margin

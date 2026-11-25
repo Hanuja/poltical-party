@@ -8,6 +8,7 @@ import {
   WalletCards,
 } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import LanguageSwitcher from '../components/LanguageSwitcher'
 import { getLeadershipMeta } from '../services/content'
 import PageBanner from '../components/PageBanner'
 import { setPageSEO } from '../utils/seo'
@@ -83,6 +84,7 @@ export default function Accountability() {
       <section className="ac-hero">
         <div className="ac-wrap ac-hero-grid">
           <div className="ac-hero-copy">
+            <div className="ac-language-row"><LanguageSwitcher /></div>
             <div className="ac-eyebrow"><span className="ac-live-dot" />PUBLIC ACCOUNTABILITY</div>
             <h1>{language === 'en' ? <><em>Accountability</em><br /><span className="ac-and">&amp; Transparency</span></> : pageTitle}</h1>
             <p className="ac-lead">Public trust begins with accountability. Every commitment should be measurable, every project should be transparent, and every citizen deserves to know the progress.</p>

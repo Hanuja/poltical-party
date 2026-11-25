@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS hero_banner_translations (
 
 -- Seed a default active banner (placeholder campaign imagery).
 INSERT INTO hero_banners (is_active, sort_order, image_desktop, image_mobile, logo, cta1_url, cta2_url)
-SELECT 0, 0, '/images/placeholder-hero-banner.svg', '/images/placeholder-hero-banner-mobile.svg', '/images/logo.svg', '/membership', '/manifesto'
+SELECT 0, 0, '/images/placeholder-hero-banner.svg', '/images/placeholder-hero-banner-mobile.svg', '/images/logo.png', '/membership', '/manifesto'
 WHERE NOT EXISTS (SELECT 1 FROM hero_banners);
 
 INSERT INTO hero_banner_translations (banner_id, language_code, badge, heading, heading_highlight, description, cta1_label, cta2_label)

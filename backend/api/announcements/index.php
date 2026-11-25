@@ -20,6 +20,7 @@ require_once dirname(__DIR__) . '/bootstrap.php';
 require_once dirname(__DIR__) . '/../helpers/upload.php';
 require_once dirname(__DIR__) . '/../helpers/log.php';
 require_once dirname(__DIR__) . '/../helpers/announcement_access.php';
+require_once dirname(__DIR__) . '/../helpers/announcement_expiry.php';
 
 const ANN_LANGS = ['ta', 'en', 'si'];
 
@@ -133,25 +134,10 @@ function ann_slug_matches(array $row, string $slug): bool {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ---------- Status transitions (scheduled -> published, expired notices -> archived) ----------
+// ---------- Scheduled publishing and expired notice deletion ----------
 function ann_run_transitions(): void {
     try {
-        // Scheduled -> Published when scheduled time arrives
-        db()->exec(
-            "UPDATE announcements SET status='published',
-               published_at = COALESCE(published_at, COALESCE(scheduled_at, NOW()))
-             WHERE status='scheduled'
-               AND COALESCE(scheduled_at, published_at) IS NOT NULL
-               AND COALESCE(scheduled_at, published_at) <= NOW()"
-        );
-        // Expired Public Notices -> Archived (only public-notices category)
-        db()->exec(
-            "UPDATE announcements a
-             JOIN announcement_categories c ON c.id = a.category_id
-             SET a.status='archived'
-             WHERE a.status='published' AND c.slug='public-notices'
-               AND a.expires_at IS NOT NULL AND a.expires_at <= NOW()"
-        );
+        ann_run_announcement_transitions();
     } catch (Throwable $e) { /* ignore */ }
 }
 ann_run_transitions();
@@ -426,7 +412,8 @@ if ($method === 'GET' && !isset($_GET['all']) && !isset($_GET['id'])) {
             $scopeParams[] = $d;
         }
     }
-    // Filters that only narrow the list (counts still describe everything the viewer may open).
+    // Filters that narrow the list. Homepage counts must use the same checkbox filter so
+    // the homepage can hide its section when no eligible announcements are published.
     $narrow = '';
     $narrowParams = [];
     if (!empty($_GET['homepage'])) $narrow .= ' AND a.show_on_homepage = 1';
@@ -466,15 +453,16 @@ if ($method === 'GET' && !isset($_GET['all']) && !isset($_GET['id'])) {
     // Counts of what this viewer may see (search/date scoped), per category and — only for viewers with
     // Party access — per Official Announcement sub-type.
     $countParams = array_merge($params, $scopeParams);
+    $countNarrow = !empty($_GET['homepage']) ? ' AND a.show_on_homepage = 1' : '';
     $byCat = [];
     foreach (ann_bind_run(
-        "SELECT a.category_id, COUNT(*) n FROM announcements a WHERE $where $scope GROUP BY a.category_id", $countParams
+        "SELECT a.category_id, COUNT(*) n FROM announcements a WHERE $where $scope $countNarrow GROUP BY a.category_id", $countParams
     )->fetchAll() as $c) {
         $slug = ann_categories()[(int)$c['category_id']]['slug'] ?? null;
         if ($slug) $byCat[$slug] = (int)$c['n'];
     }
     $counts = [
-        'all' => (int)ann_bind_run("SELECT COUNT(*) FROM announcements a WHERE $where $scope", $countParams)->fetchColumn(),
+        'all' => (int)ann_bind_run("SELECT COUNT(*) FROM announcements a WHERE $where $scope $countNarrow", $countParams)->fetchColumn(),
         'categories' => (object)$byCat,
     ];
 
@@ -519,7 +507,7 @@ if ($method === 'GET') { // ?all=1 admin list
     $params = [];
     if (!empty($_GET['status'])) {
         $statuses = array_filter(array_map('trim', explode(',', $_GET['status'])));
-        $statuses = array_values(array_intersect($statuses, ['auto_draft','published','scheduled','archived']));
+        $statuses = array_values(array_intersect($statuses, ['auto_draft','draft','published','scheduled','archived']));
         if ($statuses) {
             $in = implode(',', array_fill(0, count($statuses), '?'));
             $where .= " AND status IN ($in)";
@@ -554,6 +542,7 @@ if ($method === 'GET') { // ?all=1 admin list
             'total' => array_sum($stats),
             'published' => $stats['published'] ?? 0,
             'draft' => $stats['draft'] ?? 0,
+            'auto_draft' => $stats['auto_draft'] ?? 0,
             'scheduled' => $stats['scheduled'] ?? 0,
             'archived' => $stats['archived'] ?? 0,
         ],
@@ -591,7 +580,7 @@ if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] === 'status'
     $id = (int)($_GET['id'] ?? 0);
     $b = request_body();
     $status = $b['status'] ?? '';
-    if (!$id || !in_array($status, ['auto_draft', 'published', 'scheduled', 'archived'], true)) {
+    if (!$id || !in_array($status, ['auto_draft', 'draft', 'published', 'scheduled', 'archived'], true)) {
         fail('Invalid request', 422);
     }
     $pub = in_array($status, ['published', 'scheduled'], true) ? ', published_at=COALESCE(published_at, NOW())' : '';
@@ -617,11 +606,25 @@ if ($method === 'POST' || $method === 'PUT') {
         ];
     }
 
+    $existingAnnouncement = null;
+    if ($id) {
+        $existingQuery = db()->prepare('SELECT category_id, status FROM announcements WHERE id = ? AND deleted_at IS NULL');
+        $existingQuery->execute([$id]);
+        $existingAnnouncement = $existingQuery->fetch() ?: null;
+    }
+    $categoryId = isset($b['categoryId']) ? (int)$b['categoryId'] : (int)($b['category_id'] ?? $existingAnnouncement['category_id'] ?? 0);
+    $status = in_array($b['status'] ?? '', ['auto_draft','draft','published','scheduled','archived'], true) ? $b['status'] : 'auto_draft';
+    if ((ann_categories()[$categoryId]['slug'] ?? '') === 'press-releases') {
+        // Press releases are drafts by default; an existing published item stays published
+        // while editing, and publication itself is handled by the publish action endpoint.
+        $status = ($existingAnnouncement['status'] ?? '') === 'published' ? 'published' : 'draft';
+    }
+
     $fields = [
-        'category_id' => isset($b['categoryId']) ? (int)$b['categoryId'] : ($b['category_id'] ?? null),
+        'category_id' => $categoryId ?: null,
         'cover_image' => $b['coverImage'] ?? $b['cover_image'] ?? null,
         'image_alt' => $b['imageAlt'] ?? $b['image_alt'] ?? null,
-        'status' => in_array($b['status'] ?? '', ['auto_draft','published','scheduled','archived'], true) ? $b['status'] : 'auto_draft',
+        'status' => $status,
         'is_featured' => !empty($b['isFeatured']) ? 1 : 0,
         'is_important' => !empty($b['isImportant']) ? 1 : 0,
         'is_breaking' => !empty($b['isBreaking']) ? 1 : 0,

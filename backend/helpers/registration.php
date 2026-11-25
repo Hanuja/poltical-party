@@ -126,7 +126,7 @@ function reg_now(): string {
 /**
  * Effective registration window for an event → [opensAt, closesAt] as 'Y-m-d H:i:s' (Asia/Colombo).
  * Auto mode: opens 10 calendar days before the event date at 00:00, closes when the event starts
- * (event_date + start_time; end of the event date when no start time is set).
+ * (event_date + start_time; midnight when no start time is set).
  * Manual mode (registration_open_mode='manual'): admin-entered registration_opens_at /
  * registration_closes_at win; an empty side falls back to the auto rule.
  */
@@ -139,7 +139,7 @@ function reg_window(array $e): array {
     $st = $e['start_time'] ?? null;
     $st = ($st && $st !== '00:00:00') ? substr((string)$st, 0, 8) : null;
     $closes = ($auto || empty($e['registration_closes_at']))
-        ? $date . ' ' . ($st ?: '23:59:59')
+        ? $date . ' ' . ($st ?: '00:00:00')
         : $e['registration_closes_at'];
     return [$opens, $closes];
 }
@@ -165,7 +165,7 @@ function reg_event_stage(array $e): string {
     [$opens, $closes] = reg_window($e);
     $now = reg_now();
     if ($now < $opens) return 'upcoming';
-    if ($now > $closes) return 'registration_closed';
+    if ($now >= $closes) return 'registration_closed';
     if (empty($e['registration_open']) || ($e['status'] ?? '') !== 'published') return 'registration_closed';
     return 'registration_open';
 }
@@ -178,7 +178,7 @@ function reg_event_open(array $e): array {
     [$opens, $closes] = reg_window($e);
     $now = reg_now();
     if ($now < $opens) return [false, 'NOT_YET_OPEN'];
-    if ($now > $closes) {
+    if ($now >= $closes) {
         // past the registration window: "closed" while the event runs, "completed" after it ends
         return [false, $now > reg_event_end($e) ? 'EVENT_COMPLETED' : 'REGISTRATION_CLOSED'];
     }

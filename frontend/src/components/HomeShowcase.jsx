@@ -28,7 +28,7 @@ function EventTile({ event, lang }) {
   return <Link to={`/events/${event.slug || event.id}`} className="hev-card" data-reveal>
     <div className="hev-card-media">
       <img key={image} src={image} alt={title} loading="lazy" onError={onEventImageError} />
-      {live ? <LiveBadge small /> : <span className="hev-up-tag">UPCOMING</span>}
+      {live && event.isLiveBadge ? <LiveBadge small /> : <span className="hev-up-tag">{event.eventStatus === 'live' ? (lang === 'ta' ? 'விரைவில் நேரலை' : lang === 'si' ? 'ළඟදීම සජීවීව' : 'COMING SOON') : (live ? 'LIVE EVENT' : 'UPCOMING')}</span>}
       <span className="hev-cat">{pick(event.category, lang) || 'Event'}</span>
     </div>
     <div className="hev-card-body">
@@ -67,7 +67,7 @@ function EventsBlock({ lang }) {
       <div className="container">
         <div className="hev-head">
           <div className="hev-head-text">
-            <span className="sc-eyebrow">RISE | EVENTS &amp; ENGAGEMENT</span>
+            <span className="sc-eyebrow">TMK | EVENTS &amp; ENGAGEMENT</span>
             <h2>Upcoming &amp; Live Events</h2>
             <p>Discover important gatherings, public programmes, conversations and initiatives shaping the future of our communities.</p>
             <span className="sc-rule" />
@@ -88,7 +88,7 @@ function EventsBlock({ lang }) {
                 <div className="hev-featured-media">
                   <img key={evImg(featured)} src={evImg(featured)} alt={pick(featured.title, lang)} loading="lazy" onError={onEventImageError} />
                   <div className="hev-featured-veil" />
-                  {isLive(featured) && <LiveBadge />}
+                  {isLive(featured) && featured.isLiveBadge && <LiveBadge />}
                   <span className="hev-cat">{pick(featured.category, lang) || 'Event'}</span>
                 </div>
                 <div className="hev-featured-body">
@@ -106,7 +106,7 @@ function EventsBlock({ lang }) {
               <div className="hev-side">
                 {sideLive && (
                   <Link to={evLink(sideLive)} className="hev-side-card hev-side-live" data-reveal>
-                    <div className="hev-side-img"><img key={evImg(sideLive)} src={evImg(sideLive)} alt="" loading="lazy" onError={onEventImageError} /><LiveBadge small /></div>
+                    <div className="hev-side-img"><img key={evImg(sideLive)} src={evImg(sideLive)} alt="" loading="lazy" onError={onEventImageError} />{sideLive.isLiveBadge && <LiveBadge small />}</div>
                     <div className="hev-side-info">
                       <span className="hev-cat-sm">{pick(sideLive.category, lang) || 'Event'}</span>
                       <h4>{pick(sideLive.title, lang)}</h4>
@@ -144,18 +144,19 @@ function EventsBlock({ lang }) {
 
 /* ── Research: editorial journal ─────────────────────────── */
 function ResearchBlock({ lang }) {
-  const { t } = useLanguage()
-  const { data, loading } = useFetch(() => getPolicies({ lang }), [lang])
+  const { language } = useLanguage()
+  const activeLanguage = lang || language
+  const { data, loading } = useFetch(() => getPolicies({ lang: activeLanguage }), [activeLanguage])
   const pubs = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : [])
   const [cat, setCat] = useState('all')
   const cats = useMemo(() => ['all', 'Development', 'Economy', 'Education', 'Healthcare', 'Environment', 'Governance'], [])
-  const filtered = cat === 'all' ? pubs : pubs.filter(p => pick(p.category, lang) === cat || pick(p.categoryName, lang) === cat)
+  const filtered = cat === 'all' ? pubs : pubs.filter(p => pick(p.category, activeLanguage) === cat || pick(p.categoryName, activeLanguage) === cat)
   const featured = filtered[0]
   const rest = filtered.slice(1, 7)
 
   const stats = [
     { n: pubs.length, l: 'Total Publications' },
-    { n: new Set(pubs.map(p => pick(p.category, lang) || pick(p.categoryName, lang))).size, l: 'Research Areas' },
+    { n: new Set(pubs.map(p => pick(p.category, activeLanguage) || pick(p.categoryName, activeLanguage))).size, l: 'Research Areas' },
     { n: pubs.filter(p => p.type === 'report' || p.docType === 'report').length, l: 'Published Reports' },
     { n: pubs.filter(p => p.status === 'published').length, l: 'Active Projects' },
   ]
@@ -164,7 +165,7 @@ function ResearchBlock({ lang }) {
     <section className="sc-section sc-research" data-reveal>
       <div className="container">
         <div className="sc-head sc-head-r">
-          <span className="sc-eyebrow">RISE | RESEARCH &amp; KNOWLEDGE</span>
+          <span className="sc-eyebrow">TMK | RESEARCH &amp; KNOWLEDGE</span>
           <h2>Latest Research Highlights</h2>
           <p>Explore research, evidence, publications and insights contributing to sustainable development, social progress and informed decision-making.</p>
           <span className="sc-rule sc-rule-r" />
@@ -179,16 +180,16 @@ function ResearchBlock({ lang }) {
             <div className="sc-featured-r-cover">
               <img src={featured.image || '/images/research.jpg'} alt="" loading="lazy" />
               <span className="sc-pub-num">№ {String(pubs.indexOf(featured) + 1).padStart(2, '0')}</span>
-              <span className="sc-cat-label">{pick(featured.categoryName || featured.category, lang) || 'Research'}</span>
+              <span className="sc-cat-label">{pick(featured.categoryName || featured.category, activeLanguage) || 'Research'}</span>
             </div>
             <div className="sc-featured-r-body">
               <span className="sc-featured-tag">FEATURED RESEARCH</span>
-              <h3>{pick(featured.title, lang)}</h3>
-              <p>{pick(featured.excerpt || featured.description, lang)}</p>
+              <h3>{pick(featured.title, activeLanguage)}</h3>
+              <p>{pick(featured.excerpt || featured.description, activeLanguage)}</p>
               <div className="sc-meta">
-                <span><Users size={15} /> {pick(featured.author, lang) || 'RISE Research'}</span>
-                <span><Calendar size={15} /> {fmtDate(featured.publishedAt || featured.date, lang)}</span>
-                <span><Clock size={15} /> {pick(featured.readTime, lang) || '5 min read'}</span>
+                <span><Users size={15} /> {pick(featured.author, activeLanguage) || 'TMK Research'}</span>
+                <span><Calendar size={15} /> {fmtDate(featured.publishedAt || featured.date, activeLanguage)}</span>
+                <span><Clock size={15} /> {pick(featured.readTime, activeLanguage) || '5 min read'}</span>
               </div>
               <div className="sc-actions">
                 <Link to={`/policies/${featured.slug || featured.id}`} className="sc-btn sc-btn-maroon">Read Research <ArrowRight size={16} /></Link>
@@ -208,14 +209,14 @@ function ResearchBlock({ lang }) {
         <div className="sc-pubs">
           {rest.map((p, i) => (
             <article key={p.id} className={`sc-pub ${i % 2 ? 'flip' : ''}`} data-reveal>
-              <div className="sc-pub-cover"><img src={p.image || '/images/research.jpg'} alt="" loading="lazy" /><span className="sc-pub-type">{pick(p.typeName || p.type, lang) || 'Paper'}</span></div>
+              <div className="sc-pub-cover"><img src={p.image || '/images/research.jpg'} alt="" loading="lazy" /><span className="sc-pub-type">{pick(p.typeName || p.type, activeLanguage) || 'Paper'}</span></div>
               <div className="sc-pub-body">
-                <span className="sc-pub-cat">{pick(p.categoryName || p.category, lang) || 'Research'}</span>
-                <h4><Link to={`/policies/${p.slug || p.id}`}>{pick(p.title, lang)}</Link></h4>
-                <p>{pick(p.excerpt || p.description, lang)}</p>
+                <span className="sc-pub-cat">{pick(p.categoryName || p.category, activeLanguage) || 'Research'}</span>
+                <h4><Link to={`/policies/${p.slug || p.id}`}>{pick(p.title, activeLanguage)}</Link></h4>
+                <p>{pick(p.excerpt || p.description, activeLanguage)}</p>
                 <div className="sc-pub-meta">
-                  <span>{pick(p.author, lang) || 'RISE Research'}</span>
-                  <span>{fmtDate(p.publishedAt || p.date, lang)}</span>
+                  <span>{pick(p.author, activeLanguage) || 'TMK Research'}</span>
+                  <span>{fmtDate(p.publishedAt || p.date, activeLanguage)}</span>
                   {p.fileUrl && p.fileUrl !== '#' && <a href={p.fileUrl} download><Download size={13} /> PDF</a>}
                 </div>
               </div>
@@ -228,6 +229,7 @@ function ResearchBlock({ lang }) {
 }
 
 export default function HomeShowcase() {
+  const { language } = useLanguage()
   const ref = useRef(null)
   useEffect(() => {
     const root = ref.current
@@ -239,5 +241,5 @@ export default function HomeShowcase() {
     mutations.observe(root, { childList: true, subtree: true })
     return () => { mutations.disconnect(); io.disconnect() }
   }, [])
-  return <div ref={ref}><EventsBlock /><ResearchBlock /></div>
+  return <div ref={ref}><EventsBlock lang={language} /><ResearchBlock lang={language} /></div>
 }

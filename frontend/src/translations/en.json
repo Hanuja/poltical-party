@@ -42,7 +42,7 @@
     "to": "To"
   },
   "nav": {
-    "home": "Home",
+    "home": "TMK",
     "about": "About Us",
     "leadership": "Leadership",
     "policies": "Policies & Manifesto",
@@ -68,7 +68,7 @@
     "megaEventsDesc": "Party meetings and events.",
     "megaGalleryDesc": "Photos from party activities.",
     "megaVideosDesc": "Interviews and video updates.",
-    "rise": "Rise",
+    "rise": "RISE",
     "ourIdentity": "Our Identity",
     "ourPeople": "Our People",
     "moreOptions": "More",
@@ -151,6 +151,8 @@
   },
   "heroBanner": {
     "ariaLabel": "Campaign hero banner",
+    "sloganLead": "One goal:",
+    "sloganEnd": "liberation for our people.",
     "badge": "A New Political Movement",
     "heading": "A Better Future Starts With Us.",
     "headingHighlight": "Better Future",
